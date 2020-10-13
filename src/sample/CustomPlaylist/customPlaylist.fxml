@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.CustomPlaylist.CustomPlaylistController">
+   <children>
+      <AnchorPane prefHeight="48.0" prefWidth="600.0">
+         <children>
+            <Label fx:id="playlistName" layoutX="40.0" layoutY="13.0" text="playlist Name">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+            <Button fx:id="addSong" layoutX="477.0" layoutY="9.0" mnemonicParsing="false" onAction="#AddSong" text="add song" />
+         </children>
+      </AnchorPane>
+      <AnchorPane layoutY="47.0" prefHeight="352.0" prefWidth="600.0">
+         <children>
+            <ListView fx:id="songList" layoutX="203.0" layoutY="57.0" prefHeight="352.0" prefWidth="606.4" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+         </children>
+      </AnchorPane>
+   </children>
+</AnchorPane>
