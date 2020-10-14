@@ -12,9 +12,9 @@ public class DatabaseHandler {
     private PreparedStatement preparedStatement;
     private ResultSet rs;
 
-    public DatabaseHandler(){
-        connection = getConnection();
-    }
+//    public DatabaseHandler(){
+//        connection = getConnection();
+//    }
 
     public Connection getConnection()
     {
@@ -25,7 +25,7 @@ public class DatabaseHandler {
         }
         catch (Exception E)
         {
-            E.printStackTrace();
+           // E.printStackTrace();
             return null;
         }
     }
@@ -52,6 +52,7 @@ public class DatabaseHandler {
         String password = getMd5(pass);
         String query = "INSERT INTO Users VALUES (?,?,?)";
         try{
+            connection = getConnection();
             preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1,uname);
             preparedStatement.setString(2,password);
@@ -61,6 +62,9 @@ public class DatabaseHandler {
         }catch (Exception e){
             return false;
         }
+        finally {
+            close();
+        }
     }
 
     public boolean insertUserDetail(String uname,String language,String genere,String artist)
@@ -69,6 +73,7 @@ public class DatabaseHandler {
         String query2 = "INSERT INTO Generes VALUES(?,?)";
         String query3 = "INSERT INTO Artists VALUES(?,?)";
         try{
+            connection = getConnection();
             preparedStatement = connection.prepareStatement(query1);
             preparedStatement.setString(1,uname);
             preparedStatement.setString(2,language);
@@ -85,12 +90,16 @@ public class DatabaseHandler {
         }catch (Exception e){
             return false;
         }
+        finally {
+            close();
+        }
     }
 
     public boolean likeOrDislike(String uname,String status,int id)
     {
         String query = "INSERT INTO ? VALUES(?,?)";
         try{
+            connection = getConnection();
             preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1,status);
             preparedStatement.setString(2,uname);
@@ -100,6 +109,9 @@ public class DatabaseHandler {
         }catch (Exception e){
             return false;
         }
+        finally {
+            close();
+        }
     }
 
     public boolean addToHistory(String uname,int id,String time)
@@ -107,6 +119,7 @@ public class DatabaseHandler {
         String query = "SELECT COUNT(*) FROM History";
         String query1 = "INSERT INTO History VALUES(?,?,?,?)";
         try{
+            connection = getConnection();
             preparedStatement = connection.prepareStatement(query);
             rs = preparedStatement.executeQuery();
             int count = rs.getInt("COUNT(*)");
@@ -120,12 +133,16 @@ public class DatabaseHandler {
         }catch (Exception e){
             return false;
         }
+        finally {
+            close();
+        }
     }
 
     public byte[] get_Song(int id)
     {
         String query = "SELECT song FROM Songs WHERE Id=?";
         try{
+            connection = getConnection();
             Blob blob = null;
             preparedStatement = connection.prepareStatement(query);
             preparedStatement.setInt(1,id);
@@ -138,17 +155,88 @@ public class DatabaseHandler {
         }catch (Exception e){
             return null;
         }
+        finally {
+            close();
+        }
     }
 
     public int getSongId(String title)
     {
         String query = "SELECT Id FROM Songs WHERE Title=?";
         try {
+            connection = getConnection();
             preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1,title);
             return preparedStatement.executeQuery().getInt("Id");
         }catch (SQLException e){
             return 0;
+        }
+        finally {
+            close();
+        }
+    }
+
+    public String getSongTitle(int id)
+    {
+        String query = "SELECT Title FROM Songs WHERE Id=?";
+        try {
+            connection = getConnection();
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1,id);
+            return preparedStatement.executeQuery().getString("Title");
+        }catch (SQLException e){
+            return null;
+        }
+        finally {
+            close();
+        }
+    }
+
+    public String getSongArtist(int id)
+    {
+        String query = "SELECT Artist FROM Songs WHERE Id=?";
+        try {
+            connection = getConnection();
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1,id);
+            return preparedStatement.executeQuery().getString("Artist");
+        }catch (SQLException e){
+            return null;
+        }
+        finally {
+            close();
+        }
+    }
+
+    public String getSongAlbum(int id)
+    {
+        String query = "SELECT Album FROM Songs WHERE Id=?";
+        try {
+            connection = getConnection();
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1,id);
+            return preparedStatement.executeQuery().getString("Album");
+        }catch (SQLException e){
+            return null;
+        }
+        finally {
+            close();
+        }
+    }
+
+    public void addToSearchHistory(String uname,String searchedItem)
+    {
+        String query = "INSERT INTO searchedHistory VALUES(?,?)";
+        try{
+            connection = getConnection();
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1,uname);
+            preparedStatement.setString(2,searchedItem);
+            preparedStatement.execute();
+        }catch (SQLException e){
+
+        }finally {
+            close();
         }
     }
 

@@ -26,7 +26,7 @@ public class HistoryController extends DatabaseHandler implements Initializable 
     protected ListView<String> historySongs;
     protected ObservableList<String> list = FXCollections.observableArrayList();
     protected ArrayList<Integer> songIds = new ArrayList<Integer>();
-    protected ArrayList<String> time = new ArrayList<>();
+    protected ArrayList<String> time = new ArrayList<String>();
 
     public void getHistory()
     {
@@ -43,25 +43,21 @@ public class HistoryController extends DatabaseHandler implements Initializable 
         }catch (SQLException e){
             return;
         }
+        finally {
+            close();
+        }
     }
 
     public void setList()
     {
         int i=0;
-        String query = "SELECT Title FROM Songs WHERE Id=?";
-        try{
-            for (int id:songIds)
-            {
-                preparedStatement = connection.prepareStatement(query);
-                preparedStatement.setInt(1,id);
-                rs = preparedStatement.executeQuery();
-                list.add(rs.getString("Title")+"\t   "+time.get(i));
-                i++;
-            }
-            historySongs.setItems(list);
-        }catch (SQLException e){
-            return;
+        for (int id:songIds)
+        {
+            String title = getSongTitle(id);
+            list.add(title+"\t"+time.get(i));
+            i++;
         }
+        historySongs.setItems(list);
     }
 
 

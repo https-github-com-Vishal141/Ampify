@@ -14,6 +14,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 
@@ -21,6 +22,7 @@ public class CustomPlaylistController implements Initializable {
     @FXML
     public ListView<String> songList;
     private ObservableList selectedSongs = FXCollections.observableArrayList();
+    private ArrayList<Integer> selectedIds = new ArrayList<Integer>();
 
     public void AddSong(ActionEvent actionEvent) throws Exception {
         Stage stage = (Stage) songList.getScene().getWindow();
@@ -39,6 +41,7 @@ public class CustomPlaylistController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
        selectedSongs = AddSongController.getSelectedSong();
+       selectedIds = AddSongController.getSelectedIds();
        songList.setItems(selectedSongs);
        songList.setOnMouseClicked(new EventHandler<MouseEvent>() {
            @Override

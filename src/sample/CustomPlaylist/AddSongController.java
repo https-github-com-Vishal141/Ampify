@@ -20,13 +20,16 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 public class AddSongController extends DatabaseHandler implements Initializable {
    @FXML
    public ListView<String> songList;
    private ObservableList titles = FXCollections.observableArrayList();
+   private ArrayList<Integer> Ids = new ArrayList<Integer>();
    private static ObservableList selectedSongs = FXCollections.observableArrayList();
+   private static ArrayList<Integer> selectedIds = new ArrayList<Integer>();
    private Connection connection;
    private PreparedStatement preparedStatement;
    private ResultSet rs;
@@ -41,20 +44,25 @@ public class AddSongController extends DatabaseHandler implements Initializable 
 
     public void getTitles()
     {
-        String query ="SELECT Title FROM Songs";
+        String query ="SELECT Title,Id FROM Songs";
         try{
             preparedStatement = connection.prepareStatement(query);
             rs = preparedStatement.executeQuery();
             while (rs.next())
             {
                 titles.add(rs.getString("Title"));
+                Ids.add(rs.getInt("Id"));
             }
         }catch (SQLException e){
             titles.add("No Songs Found");
         }
+        finally {
+            close();
+        }
     }
 
     public static ObservableList getSelectedSong(){return selectedSongs;}
+    public static ArrayList<Integer> getSelectedIds(){return selectedIds;}
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -65,6 +73,8 @@ public class AddSongController extends DatabaseHandler implements Initializable 
             @Override
             public void handle(MouseEvent mouseEvent) {
                 selectedSongs.add(songList.getSelectionModel().getSelectedItem());
+                int index = titles.indexOf(songList.getSelectionModel().getSelectedItem());
+                selectedIds.add(Ids.get(index));
             }
         });
 
