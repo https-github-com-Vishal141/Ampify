@@ -57,7 +57,12 @@ public class AddSongController extends DatabaseHandler implements Initializable 
             titles.add("No Songs Found");
         }
         finally {
-            close();
+            try {
+                connection.close();
+                preparedStatement.close();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
     }
 

@@ -2,11 +2,19 @@ package sample.LocalSong;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.media.Media;
+import javafx.stage.Stage;
+import sample.Controller;
+import sample.Player.VideoPlayer;
 
 import java.io.File;
 import java.net.URL;
@@ -51,14 +59,53 @@ public class LocalVideoController implements Initializable {
         return video;
     }
 
+    public static Parent getParent() throws Exception
+    {
+        Parent root = FXMLLoader.load(localSongController.class.getResource("localVideo.fxml"));
+        return root;
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         setList();
         videoList.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-
+                int index = videoList.getSelectionModel().getSelectedIndex();
+                File file = videos.get(index);
+                Media media = new Media(file.toURI().toString());
+                if (VideoPlayer.status)
+                {
+                    VideoPlayer.mediaPlayer.stop();
+                }
+                VideoPlayer.status = true;
+                VideoPlayer.media = media;
+                VideoPlayer.Name=videoList.getSelectionModel().getSelectedItem();
+                VideoPlayer.previousName= "Local Videos";
+                try {
+                    VideoPlayer.previousRoot = getParent();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                Stage stage = (Stage) videoList.getScene().getWindow();
+                Parent root = null;
+                try {
+                    root = VideoPlayer.getRoot();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                stage.setTitle("Player");
+                stage.setScene(new Scene(root,600,600));
+                stage.show();
             }
         });
+    }
+
+    public void back(ActionEvent actionEvent) throws Exception{
+        Stage stage = (Stage) videoList.getScene().getWindow();
+        Parent root = Controller.getRoot();
+        stage.setTitle("Ampify");
+        stage.setScene(new Scene(root,600,700));
+        stage.show();
     }
 }

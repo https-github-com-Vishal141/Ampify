@@ -78,7 +78,12 @@ public class SearchResultController extends DatabaseHandler implements Initializ
             searchedSongs.add("No Song Found");
         }
         finally {
-            close();
+            try {
+                connection.close();
+                preparedStatement.close();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
     }
 
@@ -97,7 +102,12 @@ public class SearchResultController extends DatabaseHandler implements Initializ
         }catch (SQLException e){
             searchedSongs.add("");
         }finally {
-            close();
+            try {
+                connection.close();
+                preparedStatement.close();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
     }
 }

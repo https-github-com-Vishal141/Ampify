@@ -5,14 +5,18 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import sample.Login.LoginController;
+import sample.Login.RegisterController;
 
 public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
-        primaryStage.setTitle("Hello World");
-        primaryStage.setScene(new Scene(root, 300, 275));
+        //Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
+        //Parent root = RegisterController.getRoot();
+        Parent root = LoginController.getRoot();
+        primaryStage.setTitle("Register");
+        primaryStage.setScene(new Scene(root, 600, 600));
         primaryStage.show();
     }
 

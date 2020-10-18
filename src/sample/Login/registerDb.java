@@ -5,19 +5,16 @@ import sample.DatabaseHandler;
 import java.sql.*;
 
 public class registerDb extends DatabaseHandler {
-    private Connection connection;
-    private PreparedStatement preparedStatement;
     private ResultSet rs;
-
-    public registerDb(){
-        connection = getConnection();
-    }
 
     public boolean CheckForExist(String email)
     {
+        Connection connection=null;
+        PreparedStatement preparedStatement=null;
         String query = "SELECT email FROM users WHERE email=?";
         String uname;
         try{
+            connection = getConnection();
             preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1,email);
             rs = preparedStatement.executeQuery();
@@ -27,14 +24,24 @@ public class registerDb extends DatabaseHandler {
             return false;
         }catch (SQLException E){
             return true;
+        }finally {
+            try {
+                connection.close();
+                preparedStatement.close();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
     }
 
     public boolean registerUser(String Username,String Password,String Email)
     {
+        Connection connection=null;
+        PreparedStatement preparedStatement=null;
         String pass = getMd5(Password);
         String query = "INSERT INTO users VALUES(?,?,?)";
         try {
+            connection = getConnection();
             preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1,Username);
             preparedStatement.setString(2,pass);
@@ -43,6 +50,13 @@ public class registerDb extends DatabaseHandler {
             return true;
         }catch (SQLException e){
             return false;
+        }finally {
+            try {
+                connection.close();
+                preparedStatement.close();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
     }
 

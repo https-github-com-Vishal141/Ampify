@@ -6,23 +6,30 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import sample.Controller;
 
 import java.io.IOException;
 
 
 public class LoginController {
     public TextField username;
-    public TextField password;
+    public PasswordField password;
     public Button signIn,signUp;
 
     loginDb ldb = new loginDb();
 
-    public void SignIn(ActionEvent actionEvent) {
+    public void SignIn(ActionEvent actionEvent) throws Exception{
         if (username.getText()!=null && password.getText()!=null){
             if (ldb.login(username.getText(),password.getText())){
-
+                Controller.Username = username.getText();
+                Stage stage = (Stage) signIn.getScene().getWindow();
+                Parent root = Controller.getRoot();
+                stage.setTitle("Ampify");
+                stage.setScene(new Scene(root,600,600));
+                stage.show();
             }
             else {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
@@ -46,5 +53,11 @@ public class LoginController {
         stage.setTitle("Sign Up");
         stage.setScene(new Scene(root,600,600));
         stage.show();
+    }
+
+    public static Parent getRoot() throws Exception
+    {
+        Parent root = FXMLLoader.load(RegisterController.class.getResource("login.fxml"));
+        return root;
     }
 }

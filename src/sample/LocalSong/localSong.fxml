@@ -5,6 +5,7 @@
 
 <AnchorPane prefHeight="400.0" prefWidth="492.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.LocalSong.localSongController">
    <children>
-      <ListView fx:id="myList" layoutX="-1.0" layoutY="64.0" prefHeight="400.0" prefWidth="493.4" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+      <ListView fx:id="myList" layoutX="-1.0" layoutY="53.0" prefHeight="347.0" prefWidth="492.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="53.0" />
+      <Button layoutY="14.0" mnemonicParsing="false" onAction="#back" text="Back" />
    </children>
 </AnchorPane>

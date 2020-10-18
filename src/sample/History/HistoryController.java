@@ -2,11 +2,17 @@ package sample.History;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
+import javafx.stage.Stage;
+import sample.Controller;
 import sample.DatabaseHandler;
 
 import java.net.URL;
@@ -30,7 +36,7 @@ public class HistoryController extends DatabaseHandler implements Initializable 
 
     public void getHistory()
     {
-        String query = "SELECT songId,time FROM History WHERE username=? ORDER BY serial_no DESC";
+        String query = "SELECT songId,date,time FROM History WHERE username=? ORDER BY serial_no DESC";
         try {
             preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1,username);
@@ -38,13 +44,18 @@ public class HistoryController extends DatabaseHandler implements Initializable 
             while (rs.next())
             {
                 songIds.add(rs.getInt("songId"));
-                time.add(rs.getString("time"));
+                time.add(rs.getString("date")+"\t"+rs.getString("time"));
             }
         }catch (SQLException e){
             return;
         }
         finally {
-            close();
+            try {
+                connection.close();
+                preparedStatement.close();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
     }
 
@@ -60,6 +71,11 @@ public class HistoryController extends DatabaseHandler implements Initializable 
         historySongs.setItems(list);
     }
 
+    public static Parent getRoot() throws Exception
+    {
+        Parent root = FXMLLoader.load(HistoryController.class.getResource("history.fxml"));
+        return root;
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -70,5 +86,13 @@ public class HistoryController extends DatabaseHandler implements Initializable 
 
             }
         });
+    }
+
+    public void back(ActionEvent actionEvent) throws Exception{
+        Stage stage = (Stage) historySongs.getScene().getWindow();
+        Parent root = Controller.getRoot();
+        stage.setTitle("Ampify");
+        stage.setScene(new Scene(root,600,700));
+        stage.show();
     }
 }
