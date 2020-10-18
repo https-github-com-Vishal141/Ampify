@@ -61,7 +61,7 @@ public class AddSongController extends DatabaseHandler implements Initializable 
                 connection.close();
                 preparedStatement.close();
             }catch (Exception e){
-                e.printStackTrace();
+                //e.printStackTrace();
             }
         }
     }
