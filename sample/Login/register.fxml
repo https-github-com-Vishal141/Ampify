@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Login.RegisterController">
+   <children>
+      <Label layoutX="60.0" layoutY="32.0" text="Sign Up">
+         <font>
+            <Font size="24.0" />
+         </font>
+      </Label>
+      <TextField fx:id="email" layoutX="60.0" layoutY="87.0" prefHeight="26.0" prefWidth="208.0" promptText="Email" />
+      <TextField fx:id="username" layoutX="60.0" layoutY="138.0" prefHeight="26.0" prefWidth="208.0" promptText="Username" />
+      <PasswordField fx:id="password" layoutX="60.0" layoutY="187.0" prefHeight="26.0" prefWidth="208.0" promptText="Password" />
+      <TextField fx:id="cPassword" layoutX="60.0" layoutY="238.0" prefHeight="26.0" prefWidth="208.0" promptText="Confirm Password" />
+      <Button fx:id="register" layoutX="216.0" layoutY="291.0" mnemonicParsing="false" onAction="#onRegister" text="Register" />
+      <CheckBox fx:id="justine" layoutX="335.0" layoutY="144.0" mnemonicParsing="false" text="Justine Bieber" />
+      <Label layoutX="335.0" layoutY="91.0" text="Artists" />
+      <CheckBox fx:id="selena" layoutX="335.0" layoutY="115.0" mnemonicParsing="false" text="Selena" />
+      <Label layoutX="455.0" layoutY="91.0" text="Generes" />
+      <CheckBox fx:id="rockm" layoutX="450.0" layoutY="115.0" mnemonicParsing="false" text="Rock Music" />
+      <CheckBox fx:id="dubstep" layoutX="450.0" layoutY="144.0" mnemonicParsing="false" text="Dubstep" />
+      <CheckBox fx:id="english" layoutX="335.0" layoutY="240.0" mnemonicParsing="false" text="English" />
+      <Label layoutX="335.0" layoutY="187.0" text="Language" />
+      <CheckBox fx:id="hindi" layoutX="335.0" layoutY="211.0" mnemonicParsing="false" text="Hindi" />
+      <Button fx:id="login" layoutX="60.0" layoutY="351.0" mnemonicParsing="false" onAction="#onLogin" text="Log In" />
+   </children>
+</AnchorPane>
