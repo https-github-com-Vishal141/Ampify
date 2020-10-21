@@ -117,8 +117,16 @@ public class clientHandler extends DatabaseHandler implements Runnable {
                        String time = dis.readUTF();
                        recomOnTime = getRecommendedOnTime(time,uname);
                        recomOnLike = getRecommendedOnLikes();
+                       for(int songId:recomOnTime){
+                           trendingTitle.add(getSongTitle(songId));
+                       }
+                       for(int songId:recomOnLike){
+                           recentTitle.add(getSongTitle(songId));
+                       }
                        objectOutputStream.writeObject(recomOnTime);
+                       objectOutputStream.writeObject(trendingTitle);
                        objectOutputStream.writeObject(recomOnLike);
+                       objectOutputStream.writeObject(recentTitle);
                        objectOutputStream.flush();
                        break;
                    case "history":                      
@@ -160,6 +168,46 @@ public class clientHandler extends DatabaseHandler implements Runnable {
                        Playlists = getPlaylists(uname);
                        objectOutputStream.writeObject(Playlists);
                        objectOutputStream.flush();
+                       break;
+                   case "LikeOrDisLike":
+                       String status = dis.readUTF();
+                       uname = dis.readUTF();
+                       Id = dis.readUTF();
+                       id = Integer.parseInt(Id);
+                       ps.println("doing");
+                       if(likeOrDislike(status,uname,id))
+                           ps.println("done");
+                       else
+                           ps.println("error");
+                       break;
+                   case "AllSong":
+                       Playlists = getAllSong();
+                       objectOutputStream.writeObject(Playlists);
+                       objectOutputStream.flush();
+                       break;
+                   case "searchHistory":
+                       uname = dis.readUTF();
+                       Playlists = getserchHistory(uname);
+                       objectOutputStream.writeObject(Playlists);
+                       objectOutputStream.flush();
+                       break;
+                   case "searchResult":
+                       String item = dis.readUTF();
+                       recomOnLike = getSearchResult(item);
+                       for(int i:recomOnLike)
+                       {
+                           String title = getSongTitle(i);
+                           String artist = getSongArtist(i);
+                           recentTitle.add(title+"\t"+"\t"+artist);
+                       }
+                       objectOutputStream.writeObject(recomOnLike);
+                       objectOutputStream.writeObject(recentTitle);
+                       objectOutputStream.flush();
+                       break;
+                   case "addToSearchHistory":                 
+                       uname = dis.readUTF();
+                       item = dis.readUTF();
+                       addToSearchHistory(uname,item);
                        break;
                }
 

@@ -361,8 +361,9 @@ public class DatabaseHandler {
     {
         Connection connection=null;
         PreparedStatement preparedStatement=null;
-        ArrayList[] history = new ArrayList[3];
+        ArrayList[] history = new ArrayList[4];
         ArrayList<Integer> Ids = new ArrayList<Integer>();
+        ArrayList<String> title = new ArrayList<String>();
         ArrayList<String> date = new ArrayList<String>();
         ArrayList<String> time = new ArrayList<String>();
         String query = "SELECT songId,date,time FROM history WHERE username=?";
@@ -377,9 +378,12 @@ public class DatabaseHandler {
                 date.add(rs.getString("date"));
                 time.add(rs.getString("time"));
             }
+            for(int id:Ids)
+                title.add(getSongTitle(id));
             history[0]=Ids;
-            history[1]=date;
-            history[2]=time;
+            history[1]=title;
+            history[2]=date;
+            history[3]=time;
             return history;
         }catch(SQLException e){
             return history;
@@ -416,6 +420,33 @@ public class DatabaseHandler {
             try {
                 connection.close();
                 preparedStatement.close();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+    }
+    
+    public ArrayList<String> getAllSong()
+    {
+        ArrayList<String> songs= new ArrayList<String>();
+        Connection connection=null;
+        PreparedStatement pr=null;
+        String query = "SELECT Title,Artist FROM songs";
+        try{
+            connection = getConnection();
+            pr = connection.prepareStatement(query);
+            rs = pr.executeQuery();
+            while(rs.next())
+            {
+                songs.add(rs.getString("Title")+"\t"+rs.getString("Artist"));
+            }
+            return songs;
+        }catch(SQLException e){
+            return songs;
+        }finally {
+            try {
+                connection.close();
+                pr.close();
             }catch (Exception e){
                 e.printStackTrace();
             }
@@ -531,7 +562,7 @@ public class DatabaseHandler {
     {
         Connection connection=null;
         PreparedStatement preparedStatement=null;
-        String query = "INSERT INTO searchedHistory VALUES(?,?)";
+        String query = "INSERT INTO searchhistory VALUES(?,?)";
         try{
             connection = getConnection();
             preparedStatement = connection.prepareStatement(query);
@@ -539,11 +570,65 @@ public class DatabaseHandler {
             preparedStatement.setString(2,searchedItem);
             preparedStatement.execute();
         }catch (SQLException e){
-
+            e.printStackTrace();
         }finally {
             try {
                 connection.close();
                 preparedStatement.close();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+    }
+    
+    public ArrayList<String> getserchHistory(String uname){
+        ArrayList<String> searched = new ArrayList<String>();
+        Connection connection = null;
+        PreparedStatement pr = null;
+        String query = "SELECT searchedItem FROM searchhistory WHERE username=?";
+        try{
+            connection = getConnection();
+            pr = connection.prepareStatement(query);
+            pr.setString(1, uname);
+            rs = pr.executeQuery();
+            while(rs.next())
+                searched.add(rs.getString("searchedItem"));
+            return searched;
+        }catch(SQLException e){
+            e.printStackTrace();
+            return searched;
+        }finally {
+            try {
+                connection.close();
+                pr.close();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+    }
+    
+    public Set<Integer> getSearchResult(String item)
+    {
+        Set<Integer> id = new HashSet<Integer>();
+        Connection connection=null;
+        PreparedStatement pr = null;
+        String query  = "SELECT Id FROM songs WHERE Title=? OR Artist=? OR Album=?";
+        try{
+            connection= getConnection();
+            pr = connection.prepareStatement(query);
+            pr.setString(1, item);
+            pr.setString(2, item);
+            pr.setString(3, item);
+            rs = pr.executeQuery();
+            while(rs.next())
+                id.add(rs.getInt("ID"));
+            return id;
+        }catch(SQLException e){
+            return id;
+        }finally {
+            try {
+                connection.close();
+                pr.close();
             }catch (Exception e){
                 e.printStackTrace();
             }
