@@ -29,7 +29,7 @@ public class LoginController {
                 Stage stage = (Stage) signIn.getScene().getWindow();
                 Parent root = Controller.getRoot();
                 stage.setTitle("Ampify");
-                stage.setScene(new Scene(root,600,600));
+                stage.setScene(new Scene(root,800,600));
                 stage.show();
             }
             else {

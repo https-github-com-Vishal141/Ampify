@@ -13,6 +13,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import sample.Controller;
+import sample.handleServer;
 
 import java.net.URL;
 import java.sql.Connection;
@@ -30,43 +31,23 @@ public class HistoryController  implements Initializable {
     @FXML
     protected ListView<String> historySongs;
     protected ObservableList<String> list = FXCollections.observableArrayList();
-    protected ArrayList<Integer> songIds = new ArrayList<Integer>();
-    protected ArrayList<String> time = new ArrayList<String>();
+    protected ArrayList[] history;
+    protected ArrayList<Integer> songIds;
+    protected ArrayList<String> songTitle ;
+    protected ArrayList<String > date ;
+    protected ArrayList<String> time ;
 
-    public void getHistory()
-    {
-        String query = "SELECT songId,date,time FROM History WHERE username=? ORDER BY serial_no DESC";
-        try {
-            preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setString(1,username);
-            rs = preparedStatement.executeQuery();
-            while (rs.next())
-            {
-                songIds.add(rs.getInt("songId"));
-                time.add(rs.getString("date")+"\t"+rs.getString("time"));
-            }
-        }catch (SQLException e){
-            return;
-        }
-        finally {
-            try {
-                connection.close();
-                preparedStatement.close();
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-        }
-    }
+    handleServer handle = new handleServer();
 
     public void setList()
     {
-        int i=0;
-        for (int id:songIds)
-        {
-           // String title = getSongTitle(id);
-            //list.add(title+"\t"+time.get(i));
-            i++;
-        }
+        history = handle.getHistory(username);
+        songIds = history[0];
+        songTitle = history[1];
+        date = history[2];
+        time = history[3];
+        for(int i=0;i<songIds.size();i++)
+            list.add(songTitle.get(i)+"\t"+date.get(i)+time.get(i));
         historySongs.setItems(list);
     }
 
@@ -78,7 +59,7 @@ public class HistoryController  implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-       // connection = getConnection();
+        setList();
         historySongs.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
@@ -91,7 +72,7 @@ public class HistoryController  implements Initializable {
         Stage stage = (Stage) historySongs.getScene().getWindow();
         Parent root = Controller.getRoot();
         stage.setTitle("Ampify");
-        stage.setScene(new Scene(root,600,700));
+        stage.setScene(new Scene(root,800,600));
         stage.show();
     }
 }

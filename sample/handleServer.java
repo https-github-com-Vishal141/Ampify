@@ -1,5 +1,7 @@
 package sample;
 
+import sample.Search.SearchResultController;
+
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -8,10 +10,10 @@ import java.util.Set;
 public class handleServer
 {
     private Socket socket;
-    public DataInputStream dis;
-    public DataOutputStream dos;
-    public BufferedReader br;
-    public ObjectInputStream objectInputStream;
+    private DataInputStream dis;
+    private DataOutputStream dos;
+    private BufferedReader br;
+    private ObjectInputStream objectInputStream;
 
     public handleServer()
     {
@@ -131,6 +133,41 @@ public class handleServer
                 e.printStackTrace();
             }
         }
+    }
+
+    public void getRecommended(String uname,String time)
+    {
+        Set<Integer> recomOnTimeId= null;
+        ArrayList<String> recomTimeTitle = null;
+        Set<Integer> recomOnLikeId= null;
+        ArrayList<String > recomLikeTitle = null;
+         try {
+            dos.writeUTF("recommended");
+            dos.writeUTF(uname);
+            dos.writeUTF(time);
+            dos.flush();
+            objectInputStream = new ObjectInputStream(socket.getInputStream());
+            recomOnTimeId = (Set<Integer>) objectInputStream.readObject();
+            recomTimeTitle = (ArrayList<String>) objectInputStream.readObject();
+            recomOnLikeId = (Set<Integer>) objectInputStream.readObject();
+            recomLikeTitle = (ArrayList<String>) objectInputStream.readObject();
+            Controller.recommendedId1 = recomOnTimeId;
+            Controller.reTimeTitle = recomTimeTitle;
+            Controller.recommendedId2 = recomOnLikeId;
+            Controller.reLikeTitle = recomLikeTitle;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+             try {
+                 socket.close();
+                 dis.close();
+                 dos.close();
+                 br.close();
+                 objectInputStream.close();
+             }catch (IOException e){
+                 e.printStackTrace();
+             }
+         }
     }
 
     public boolean createPlaylist(String uname,String name)
@@ -264,4 +301,135 @@ public class handleServer
             }
         }
     }
+
+    public boolean LikeOrDisLike(String status,String uname,String id)
+    {
+        try {
+            dos.writeUTF("LikeOrDisLike");
+            dos.writeUTF(status);
+            dos.writeUTF(uname);
+            dos.writeUTF(id);
+            dos.flush();
+            br.readLine();
+            if (br.readLine().equals("done"))
+                return true;
+            return false;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }finally {
+            try {
+                socket.close();
+                dis.close();
+                dos.close();
+                br.close();
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public ArrayList<String> getAllSong()
+    {
+        ArrayList<String> songs=null;
+        try {
+            dos.writeUTF("AllSong");
+            dos.flush();
+            objectInputStream = new ObjectInputStream(socket.getInputStream());
+            songs = (ArrayList<String>) objectInputStream.readObject();
+            return songs;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return songs;
+        }finally {
+            try {
+                socket.close();
+                dis.close();
+                dos.close();
+                br.close();
+                objectInputStream.close();
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public ArrayList<String> searchHistory(String uname)
+    {
+        ArrayList<String> searchHistory=null;
+        try {
+            dos.writeUTF("searchHistory");
+            dos.writeUTF(uname);
+            dos.flush();
+            objectInputStream = new ObjectInputStream(socket.getInputStream());
+            searchHistory = (ArrayList<String>) objectInputStream.readObject();
+            return searchHistory;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return searchHistory;
+        }finally {
+            try {
+                socket.close();
+                dis.close();
+                dos.close();
+                br.close();
+                objectInputStream.close();
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public ArrayList<String> getResult(String item)
+    {
+        ArrayList<String> result = null;
+        Set<Integer> ids = null;
+        try {
+            dos.writeUTF("searchResult");
+            dos.writeUTF(item);
+            dos.flush();
+            objectInputStream = new ObjectInputStream(socket.getInputStream());
+            ids = (Set<Integer>) objectInputStream.readObject();
+            result = (ArrayList<String >) objectInputStream.readObject();
+            SearchResultController.Ids = ids;
+            return result;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return result;
+        }finally {
+            try {
+                socket.close();
+                dis.close();
+                dos.close();
+                br.close();
+                objectInputStream.close();
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void addToSearchHistory(String user,String item)
+    {
+        try {
+            dos.writeUTF("addToSearchHistory");
+            dos.writeUTF(user);
+            dos.writeUTF(item);
+            dos.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+//    public void close()
+//    {
+//        try {
+//            socket.close();
+//            dis.close();
+//            dos.close();
+//            br.close();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
 }

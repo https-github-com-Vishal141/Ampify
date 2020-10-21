@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="561.0" prefWidth="719.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="599.0" prefWidth="719.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
    <children>
       <ScrollPane layoutX="171.0" layoutY="68.0" prefHeight="561.0" prefWidth="715.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <content>
@@ -14,13 +14,13 @@
                      <font>
                         <Font size="18.0" />
                      </font></Label>
-                  <Button layoutX="14.0" layoutY="57.0" mnemonicParsing="false" text="History" onAction="#history" />
-                  <Button layoutX="11.0" layoutY="95.0" mnemonicParsing="false" text="Liked" onAction="#likes" />
-                  <Button layoutX="7.0" layoutY="133.0" mnemonicParsing="false" text="Local Music" onAction="#local_music" />
-                  <Button layoutX="8.0" layoutY="173.0" mnemonicParsing="false" text="Local Video" onAction="#local_video"/>
-                  <ComboBox layoutX="9.0" layoutY="212.0" prefHeight="26.0" prefWidth="82.0" promptText="Playlists" />
+                  <Button layoutX="14.0" layoutY="57.0" mnemonicParsing="false" onAction="#history" text="History" />
+                  <Button layoutX="11.0" layoutY="95.0" mnemonicParsing="false" onAction="#likes" text="Liked" />
+                  <Button layoutX="7.0" layoutY="133.0" mnemonicParsing="false" onAction="#local_music" text="Local Music" />
+                  <Button layoutX="8.0" layoutY="173.0" mnemonicParsing="false" onAction="#local_video" text="Local Video" />
+                  <ComboBox fx:id="playlists" layoutX="9.0" layoutY="212.0" prefHeight="26.0" prefWidth="82.0" promptText="Playlists" />
                   <ComboBox layoutX="9.0" layoutY="250.0" prefHeight="26.0" prefWidth="82.0" promptText="Groups" />
-                  <HBox layoutX="105.0" layoutY="-3.0" prefHeight="562.0" prefWidth="610.0">
+                  <HBox layoutX="105.0" layoutY="27.0" prefHeight="560.0" prefWidth="610.0">
                      <children>
                         <VBox prefHeight="562.0" prefWidth="199.0">
                            <children>
@@ -54,6 +54,7 @@
                         </VBox>
                      </children>
                   </HBox>
+                  <Button layoutX="664.0" layoutY="1.0" mnemonicParsing="false" onAction="#search" text="Search" />
                </children>
             </AnchorPane>
          </content>
