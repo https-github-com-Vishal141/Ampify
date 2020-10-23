@@ -160,7 +160,10 @@ public class clientHandler extends DatabaseHandler implements Runnable {
                        uname  = dis.readUTF();
                        name = dis.readUTF();
                        recomOnTime = getPlaylist(uname,name);
+                       for(int i:recomOnTime)
+                           recentTitle.add(getSongTitle(i));
                        objectOutputStream.writeObject(recomOnTime);
+                       objectOutputStream.writeObject(recentTitle);
                        objectOutputStream.flush();
                        break;
                    case "getPlaylists":

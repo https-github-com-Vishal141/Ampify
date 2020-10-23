@@ -195,7 +195,7 @@ public class DatabaseHandler {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         String query1 = "INSERT INTO playlists VALUES(?,?)";
-        String query2 = "CREATE TABLE ?_? (Id int)";
+        String query2 = "CREATE TABLE "+uname+"_"+name+"(Id int primary key)";
         try{
             connection = getConnection();
             preparedStatement = connection.prepareStatement(query1);
@@ -203,8 +203,6 @@ public class DatabaseHandler {
             preparedStatement.setString(2,name);
             preparedStatement.execute();
             preparedStatement = connection.prepareStatement(query2);
-            preparedStatement.setString(1,uname);
-            preparedStatement.setString(2,name);
             preparedStatement.execute();
             return true;
         }catch(SQLException e){
@@ -223,13 +221,11 @@ public class DatabaseHandler {
     {
         Connection connection=null;
         PreparedStatement preparedStatement=null; 
-        String query = "INSERT ?_? VALUES (?)";
+        String query = "INSERT "+user+"_"+name+" VALUES (?)";
         try{
             connection = getConnection();
             preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setString(1, user);
-            preparedStatement.setString(2,name);
-            preparedStatement.setInt(3,id);
+            preparedStatement.setInt(1,id);
             preparedStatement.execute();
             return true;
         }catch(SQLException e){
@@ -249,12 +245,10 @@ public class DatabaseHandler {
         Connection connection=null;
         PreparedStatement preparedStatement=null; 
         Set<Integer> Ids = new HashSet<Integer>();
-        String query = "SELECT * FROM ?_?";
+        String query = "SELECT * FROM "+user+"_"+name;
         try{
             connection = getConnection();
             preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setString(1, user);
-            preparedStatement.setString(2,name);
             rs = preparedStatement.executeQuery();
             while(rs.next())
                 Ids.add(rs.getInt("Id"));
