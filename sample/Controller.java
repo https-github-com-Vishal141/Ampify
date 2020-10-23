@@ -12,6 +12,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.event.ActionEvent;
 import javafx.stage.Stage;
+import sample.CustomPlaylist.Create;
+import sample.CustomPlaylist.CustomPlaylistController;
 import sample.History.HistoryController;
 import sample.LocalSong.LocalVideoController;
 import sample.LocalSong.localSongController;
@@ -28,6 +30,7 @@ public class Controller implements Initializable {
     public  Label username;
     public ListView<String> recent,recommended,trending;
     public ComboBox<String> playlists;
+    public ComboBox<String> groups;
 
     private ObservableList<String> rec = FXCollections.observableArrayList();
     private ObservableList<String> recom = FXCollections.observableArrayList();
@@ -78,8 +81,10 @@ public class Controller implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         username.setText(Username);
         setList();
+        playLists.add("Create Playlist");
         playLists.addAll(handle4.getPlaylists(Username));
         playlists.setItems(playLists);
+
     }
 
     public void history(ActionEvent actionEvent) throws Exception{
@@ -116,5 +121,25 @@ public class Controller implements Initializable {
         Parent root = SearchResultController.getRoot();
         stage.setScene(new Scene(root,600,600));
         stage.show();
+    }
+
+    public void goToPlaylist(ActionEvent actionEvent) throws Exception{
+        if (playlists.getSelectionModel().getSelectedItem()!="Create Playlist")
+        {
+            CustomPlaylistController.pName = playlists.getSelectionModel().getSelectedItem();
+            Stage stage = (Stage) username.getScene().getWindow();
+            Parent root = CustomPlaylistController.getRoot();
+            stage.setTitle(playlists.getSelectionModel().getSelectedItem());
+            stage.setScene(new Scene(root,600,600));
+            stage.show();
+        }
+        else
+        {
+            Stage stage = (Stage) username.getScene().getWindow();
+            Parent root = Create.getRoot();
+            stage.setTitle("Create Playlist");
+            stage.setScene(new Scene(root,400,400));
+            stage.show();
+        }
     }
 }

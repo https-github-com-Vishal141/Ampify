@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+
+<AnchorPane prefHeight="167.0" prefWidth="373.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.CustomPlaylist.Create">
+   <children>
+      <TextField fx:id="name" layoutX="122.0" layoutY="50.0" promptText="Name of Playlist" />
+      <Label layoutX="61.0" layoutY="54.0" text="Name" />
+      <Button layoutX="221.0" layoutY="94.0" mnemonicParsing="false" onAction="#create" text="Create" />
+      <Button layoutY="1.0" mnemonicParsing="false" onAction="#back" text="back" />
+   </children>
+</AnchorPane>

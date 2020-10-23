@@ -1,5 +1,6 @@
 package sample;
 
+import sample.CustomPlaylist.CustomPlaylistController;
 import sample.Search.SearchResultController;
 
 import java.io.*;
@@ -252,6 +253,7 @@ public class handleServer
     public Set<Integer> getPlaylist(String uname,String name)
     {
         Set<Integer> Ids=null ;
+        ArrayList<String> titles=null;
         try {
             dos.writeUTF("getPlaylist");
             dos.writeUTF(uname);
@@ -259,6 +261,8 @@ public class handleServer
             dos.flush();
             objectInputStream = new ObjectInputStream(socket.getInputStream());
             Ids = (Set<Integer>) objectInputStream.readObject();
+            titles = (ArrayList<String>) objectInputStream.readObject();
+            CustomPlaylistController.Songs.addAll(titles);
             return Ids;
         } catch (Exception e) {
             e.printStackTrace();

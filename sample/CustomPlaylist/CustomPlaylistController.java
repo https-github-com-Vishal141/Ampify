@@ -9,20 +9,28 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
+import sample.Controller;
+import sample.handleServer;
 
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 
 public class CustomPlaylistController implements Initializable {
     @FXML
     public ListView<String> songList;
-    private ObservableList selectedSongs = FXCollections.observableArrayList();
-    private ArrayList<Integer> selectedIds = new ArrayList<Integer>();
+    public Label playlistName;
+    public static String pName;
+    public static ObservableList Songs = FXCollections.observableArrayList();
+    public Set<Integer> Ids ;
+
+    handleServer handle = new handleServer();
 
     public void AddSong(ActionEvent actionEvent) throws Exception {
         Stage stage = (Stage) songList.getScene().getWindow();
@@ -40,9 +48,10 @@ public class CustomPlaylistController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-       selectedSongs = AddSongController.getSelectedSong();
-       selectedIds = AddSongController.getSelectedIds();
-       songList.setItems(selectedSongs);
+        Songs.clear();
+        playlistName.setText(pName);
+        Ids = handle.getPlaylist(Controller.Username,pName);
+        songList.setItems(Songs);
        songList.setOnMouseClicked(new EventHandler<MouseEvent>() {
            @Override
            public void handle(MouseEvent mouseEvent) {

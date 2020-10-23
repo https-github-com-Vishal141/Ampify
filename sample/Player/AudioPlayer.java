@@ -19,11 +19,14 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import sample.LocalSong.localSongController;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.ResourceBundle;
+import java.util.StringTokenizer;
 
 public class AudioPlayer implements Initializable {
     public  Label songName;
@@ -41,6 +44,9 @@ public class AudioPlayer implements Initializable {
     public static int index;
     public static boolean isLocal = false;
     int min=0;
+    public ArrayList<Double> start = new ArrayList<Double>();
+    public ArrayList<Double> end = new ArrayList<Double>();
+    public ArrayList<String> subtitle = new ArrayList<String>();
 
     public void back(ActionEvent actionEvent) {
 
@@ -257,5 +263,41 @@ public class AudioPlayer implements Initializable {
             }
         });
         mediaPlayer.play();
+    }
+
+    public void ExtractLyrics(BufferedReader reader) {
+        String line;
+        ArrayList<String> lines = new ArrayList<String>();
+        try {
+            while ((line = reader.readLine()) != null) {
+                if (line.isEmpty()) {
+                    String fullLine="";
+                    String line1 = lines.get(1);
+                    StringTokenizer tokenizer = new StringTokenizer(line1, "--> ");
+                    String t1 = tokenizer.nextToken();
+                    String t2 = tokenizer.nextToken();
+                    StringTokenizer tokenizer1 = new StringTokenizer(t1, ":");
+                    StringTokenizer tokenizer2 = new StringTokenizer(t2, ":");
+                    tokenizer1.nextToken();
+                    String t1_m = tokenizer1.nextToken();
+                    String t1_s = tokenizer1.nextToken();
+                    double ss = Integer.parseInt(t1_m) * 60 + Integer.parseInt(t1_s.charAt(0) + "" + t1_s.charAt(1));
+                    tokenizer2.nextToken();
+                    String t2_m = tokenizer2.nextToken();
+                    String t2_s = tokenizer2.nextToken();
+                    double es = Integer.parseInt(t2_m) * 60 + Integer.parseInt(t2_s.charAt(0) + "" + t2_s.charAt(1));
+                    for (int i = 2; i < lines.size(); i++)
+                        fullLine =fullLine+ lines.get(i)+",";
+                    start.add(ss);
+                    end.add(es);
+                    subtitle.add(fullLine);
+                    lines.clear();
+                } else {
+                    lines.add(line);
+                }
+            }
+        }catch (IOException e){
+
+        }
     }
 }
