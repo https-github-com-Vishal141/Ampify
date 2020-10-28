@@ -3,9 +3,12 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.CustomPlaylist.AddSongController">
+<AnchorPane prefHeight="488.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.CustomPlaylist.AddSongController">
    <children>
-      <Button fx:id="add" layoutX="504.0" layoutY="360.0" mnemonicParsing="false" onAction="#AddSong" text="Add" />
-      <ListView fx:id="songList" layoutX="-1.0" layoutY="2.0" prefHeight="346.0" prefWidth="600.0" />
+      <Button fx:id="add" layoutX="516.0" layoutY="448.0" mnemonicParsing="false" onAction="#AddSong" text="Add" />
+      <ListView fx:id="songList" layoutY="33.0" prefHeight="410.0" prefWidth="600.0" />
+      <Button layoutY="1.0" mnemonicParsing="false" onAction="#back" text="back" />
+      <Button layoutX="503.0" layoutY="2.0" mnemonicParsing="false" onAction="#search" text="search" />
+      <TextField fx:id="sSong" layoutX="128.0" layoutY="2.0" prefHeight="26.0" prefWidth="311.0" promptText="search for song,title or album" />
    </children>
 </AnchorPane>

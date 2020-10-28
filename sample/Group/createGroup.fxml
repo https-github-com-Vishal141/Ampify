@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Group.CreateGroup">
+   <children>
+      <Button layoutY="1.0" mnemonicParsing="false" onAction="#back" text="back" />
+      <Label layoutX="140.0" layoutY="100.0" text="Admin">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <TextField fx:id="admin" layoutX="206.0" layoutY="97.0" prefHeight="26.0" prefWidth="185.0" promptText="admin" />
+      <Label layoutX="113.0" layoutY="143.0" text="Group Name">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <TextField fx:id="gName" layoutX="206.0" layoutY="140.0" prefHeight="26.0" prefWidth="185.0" promptText="group name" />
+      <Button layoutX="340.0" layoutY="219.0" mnemonicParsing="false" onAction="#create" text="Create" />
+   </children>
+</AnchorPane>

@@ -1,5 +1,6 @@
 package sample.LocalSong;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -31,12 +32,17 @@ public class LocalVideoController implements Initializable {
 
     public void setList()
     {
-        videos = getVideos(File.listRoots());
-        for (File f:videos)
-        {
-            list.add(f.getName().replace(".mp4",""));
-        }
-        videoList.setItems(list);
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                videos = getVideos(File.listRoots());
+                for (File f:videos)
+                {
+                    list.add(f.getName().replace(".mp4",""));
+                }
+                videoList.setItems(list);
+            }
+        });
     }
 
     public ArrayList<File> getVideos(File file[])

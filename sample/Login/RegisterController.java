@@ -30,6 +30,7 @@ public class RegisterController {
           if (!result.equals("emailExist")){
               if (!result.equals("userExist"))
               {
+                  insertDetail();
                   Stage stage = (Stage) register.getScene().getWindow();
                   Parent root = FXMLLoader.load(getClass().getResource("login.fxml"));
                   stage.setTitle("Login");
@@ -71,5 +72,33 @@ public class RegisterController {
     {
         Parent root = FXMLLoader.load(RegisterController.class.getResource("register.fxml"));
         return root;
+    }
+
+    public void insertDetail()
+    {
+        CheckBox[] array = {hindi,english,selena,justine,rockm,dubstep};
+        int i=1;
+        String detail;
+        handleServer server1 = new handleServer();
+        handleServer server2 = new handleServer();
+        handleServer server3 = new handleServer();
+        for (CheckBox c:array)
+        {
+            detail = c.getText();
+            if (c.isSelected())
+            {
+                if (i<=2)
+                {
+                    server1.insertDetail(username.getText(),detail,"language");
+                }
+                else {
+                    if (i<=4)
+                        server2.insertDetail(username.getText(),detail,"artist");
+                    else
+                        server3.insertDetail(username.getText(),detail,"generes");
+                }
+            }
+            i++;
+        }
     }
 }

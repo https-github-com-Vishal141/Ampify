@@ -13,6 +13,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import sample.Controller;
+import sample.Player.AudioPlayer;
 import sample.handleServer;
 
 import java.net.URL;
@@ -37,6 +38,8 @@ public class HistoryController  implements Initializable {
     protected ArrayList<String > date ;
     protected ArrayList<String> time ;
 
+    Stage stage = new Stage();
+
     handleServer handle = new handleServer();
 
     public void setList()
@@ -47,7 +50,7 @@ public class HistoryController  implements Initializable {
         date = history[2];
         time = history[3];
         for(int i=0;i<songIds.size();i++)
-            list.add(songTitle.get(i)+"\t"+date.get(i)+time.get(i));
+            list.add(songTitle.get(i)+"\t"+date.get(i)+"\t"+time.get(i));
         historySongs.setItems(list);
     }
 
@@ -63,7 +66,18 @@ public class HistoryController  implements Initializable {
         historySongs.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-
+                int index = historySongs.getSelectionModel().getSelectedIndex();
+                AudioPlayer.index = index;
+                //AudioPlayer.name=historySongs.getSelectionModel().getSelectedItem();
+                AudioPlayer.name = songTitle.get(index);
+                if (stage.isShowing())
+                {
+                    stage.close();
+                    AudioPlayer.mediaPlayer.stop();
+                }
+                AudioPlayer.isLocal = false;
+                AudioPlayer.queueSongs.addAll(songTitle);
+                gotoPlayer();
             }
         });
     }
@@ -73,6 +87,19 @@ public class HistoryController  implements Initializable {
         Parent root = Controller.getRoot();
         stage.setTitle("Ampify");
         stage.setScene(new Scene(root,800,600));
+        stage.show();
+    }
+
+    public void gotoPlayer()
+    {
+        Parent root = null;
+        try {
+            root = AudioPlayer.getRoot();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        stage.setTitle("Music Player");
+        stage.setScene(new Scene(root,600,600));
         stage.show();
     }
 }

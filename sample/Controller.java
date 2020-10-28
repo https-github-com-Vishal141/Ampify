@@ -2,6 +2,7 @@ package sample;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
@@ -11,22 +12,29 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.event.ActionEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import sample.CustomPlaylist.Create;
 import sample.CustomPlaylist.CustomPlaylistController;
+import sample.Group.CreateGroup;
+import sample.Group.group;
 import sample.History.HistoryController;
 import sample.LocalSong.LocalVideoController;
 import sample.LocalSong.localSongController;
+import sample.Player.AudioPlayer;
 import sample.Search.SearchResultController;
 
 
+import java.io.File;
+import java.net.URI;
 import java.net.URL;
+import java.time.LocalTime;
 import java.util.*;
 
 public class Controller implements Initializable {
 
     public static String Username;
-    public int Separator;
+    public static int Separator;
     public  Label username;
     public ListView<String> recent,recommended,trending;
     public ComboBox<String> playlists;
@@ -36,19 +44,19 @@ public class Controller implements Initializable {
     private ObservableList<String> recom = FXCollections.observableArrayList();
     private ObservableList<String> tre = FXCollections.observableArrayList();
     private ObservableList<String> playLists = FXCollections.observableArrayList();
-    private ArrayList<Integer> recentId ;
-    public static ArrayList<String > recentTitle ;
-    private ArrayList<Integer> trendingId;
-    public static ArrayList<String> trendingTitle;
-    public static Set<Integer> recommendedId1;
+    private ObservableList<String> Groups = FXCollections.observableArrayList();
     public static ArrayList<String> reTimeTitle;
-    public static Set<Integer> recommendedId2 ;
     public static ArrayList<String> reLikeTitle;
+    public static ArrayList<String> AllTitles;
 
+    Stage stage = new Stage();
+
+    handleServer handle = new handleServer();
     handleServer handle1 = new handleServer();
     handleServer handle2 = new handleServer();
     handleServer handle3 = new handleServer();
     handleServer handle4 = new handleServer();
+    handleServer handle5 = new handleServer();
 
     public static Parent getRoot() throws Exception
     {
@@ -58,17 +66,11 @@ public class Controller implements Initializable {
 
     public void setList()
     {
-        Calendar calendar =  GregorianCalendar.getInstance();
-        int hour = calendar.get(Calendar.HOUR_OF_DAY);
-
-        recentId  = handle1.getRecent(Username);
-        trendingId = handle2.getTrending();
+        int hour = LocalTime.now().getHour();
         handle3.getRecommended(Username,hour+"");
 
-        Separator = recommendedId1.size();
-
-        rec.addAll(recentTitle);
-        tre.addAll(trendingTitle);
+        rec.addAll(handle1.getRecent(Username));
+        tre.addAll(handle2.getTrending());
         recom.addAll(reTimeTitle);
         recom.addAll(reLikeTitle);
 
@@ -84,6 +86,60 @@ public class Controller implements Initializable {
         playLists.add("Create Playlist");
         playLists.addAll(handle4.getPlaylists(Username));
         playlists.setItems(playLists);
+        Groups.add("Create Group");
+        Groups.addAll(handle5.getGroups(Username));
+        groups.setItems(Groups);
+        AllTitles = handle.getAllSong();
+        recent.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                int index = recent.getSelectionModel().getSelectedIndex();
+                AudioPlayer.index = index;
+                AudioPlayer.name=recent.getSelectionModel().getSelectedItem();
+                if (stage.isShowing())
+                {
+                    stage.close();
+                    AudioPlayer.mediaPlayer.stop();
+                }
+                AudioPlayer.isLocal = false;
+                AudioPlayer.queueSongs.addAll(rec);
+                gotoPlayer();
+            }
+        });
+
+        trending.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                int index = trending.getSelectionModel().getSelectedIndex();
+                AudioPlayer.index = index;
+                AudioPlayer.name=trending.getSelectionModel().getSelectedItem();
+                if (stage.isShowing())
+                {
+                    stage.close();
+                    AudioPlayer.mediaPlayer.stop();
+                }
+                AudioPlayer.isLocal = false;
+                AudioPlayer.queueSongs.addAll(tre);
+                gotoPlayer();
+            }
+        });
+
+        recommended.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                int index = recommended.getSelectionModel().getSelectedIndex();
+                AudioPlayer.index = index;
+                AudioPlayer.name=recommended.getSelectionModel().getSelectedItem();
+                if (stage.isShowing())
+                {
+                    stage.close();
+                    AudioPlayer.mediaPlayer.stop();
+                }
+                AudioPlayer.isLocal = false;
+                AudioPlayer.queueSongs.addAll(recom);
+                gotoPlayer();
+            }
+        });
 
     }
 
@@ -126,6 +182,7 @@ public class Controller implements Initializable {
     public void goToPlaylist(ActionEvent actionEvent) throws Exception{
         if (playlists.getSelectionModel().getSelectedItem()!="Create Playlist")
         {
+            CustomPlaylistController.USER = Username;
             CustomPlaylistController.pName = playlists.getSelectionModel().getSelectedItem();
             Stage stage = (Stage) username.getScene().getWindow();
             Parent root = CustomPlaylistController.getRoot();
@@ -135,9 +192,64 @@ public class Controller implements Initializable {
         }
         else
         {
+            Create.USER = Username;
             Stage stage = (Stage) username.getScene().getWindow();
             Parent root = Create.getRoot();
             stage.setTitle("Create Playlist");
+            stage.setScene(new Scene(root,400,400));
+            stage.show();
+        }
+    }
+
+    public void gotoPlayer()
+    {
+        Parent root = null;
+        try {
+            root = AudioPlayer.getRoot();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        stage.setTitle("Music Player");
+        stage.setScene(new Scene(root,600,600));
+        stage.show();
+    }
+
+    public static URL getSong(String Title)
+    {
+//        File file1=null;
+        File file2=null;
+        URL uri=null;
+        handleServer handle5 = new handleServer();
+        handleServer handle6 = new handleServer();
+        handleServer handle7 = new handleServer();
+        handleServer handle8 = new handleServer();
+        int index = AllTitles.indexOf(Title);
+        uri = handle5.getSong(index+1);
+//        file1 = handle5.getSong("getSong",index+1);
+        file2 = handle6.getSrt(index+1);
+        handle7.addToHistory(index+1);
+        handle8.increaseView(index+1);
+        AudioPlayer.srtFile = file2;
+        AudioPlayer.id = index+1;
+        System.out.println(uri.toString());
+        return uri;
+    }
+
+    public void gotoGroups(ActionEvent actionEvent) throws Exception{
+        if (!groups.getSelectionModel().getSelectedItem().equals("Create Group"))
+        {
+            group.GNAME = groups.getSelectionModel().getSelectedItem();
+            Stage stage = (Stage) username.getScene().getWindow();
+            Parent root = group.getRoot();
+            stage.setTitle(groups.getSelectionModel().getSelectedItem());
+            stage.setScene(new Scene(root,600,600));
+            stage.show();
+        }
+        else
+        {
+            Stage stage = (Stage) username.getScene().getWindow();
+            Parent root = CreateGroup.getRoot();
+            stage.setTitle("Create Group");
             stage.setScene(new Scene(root,400,400));
             stage.show();
         }

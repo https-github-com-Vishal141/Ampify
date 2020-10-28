@@ -6,22 +6,21 @@ import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.Slider;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.control.*;
+import javafx.scene.input.SwipeEvent;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.stage.Stage;
+import sample.Controller;
+import sample.Equalizer.VideoPlayer4;
 import sample.LocalSong.localSongController;
+import sample.handleServer;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Random;
@@ -31,25 +30,86 @@ import java.util.StringTokenizer;
 public class AudioPlayer implements Initializable {
     public  Label songName;
     public static String name;
-    public Label cTime,tTime;
+    public Label cTime,tTime,lyrics;
     public Slider slider;
-    public Button play;
+    public Button play,like,dislike,download;
     public ComboBox<String> queue;
     public static ObservableList<String> queueSongs = FXCollections.observableArrayList();
+    public static int id;
 
     public static MediaPlayer.Status status;
     public Media media;
     public static MediaPlayer mediaPlayer;
-    public static ArrayList<File> songFiles;
     public static int index;
     public static boolean isLocal = false;
     int min=0;
     public ArrayList<Double> start = new ArrayList<Double>();
     public ArrayList<Double> end = new ArrayList<Double>();
     public ArrayList<String> subtitle = new ArrayList<String>();
+    public static File srtFile;
+    public FileInputStream inputStream=null;
+    public BufferedReader reader;
+    File file;
+    URL uri;
+
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        songName.setText(name);
+        queue.setItems(queueSongs);
+        if (isLocal)
+        {
+            like.setDisable(true);
+            dislike.setDisable(true);
+            download.setDisable(true);
+        }else {
+            like.setDisable(false);
+            dislike.setDisable(false);
+            download.setDisable(false);
+        }
+        slider.valueProperty().addListener(new InvalidationListener() {
+            @Override
+            public void invalidated(Observable observable) {
+                if (slider.isPressed())
+                {
+                    mediaPlayer.seek(mediaPlayer.getTotalDuration().multiply(slider.getValue()/100));
+                }
+                if (slider.getValue()==1.0)
+                    playNext();
+
+            }
+        });
+
+        if (mediaPlayer!=null)
+        {
+            status = mediaPlayer.getStatus();
+            if (status== MediaPlayer.Status.PLAYING || status== MediaPlayer.Status.PAUSED)
+                mediaPlayer.stop();
+        }
+
+        if (isLocal)
+             file = localSongController.getSongById(index);
+        else {
+            uri = Controller.getSong(queueSongs.get(index));
+            setStream();
+        }
+       // media = new Media(file.toURI().toString());
+        media = new Media(uri.toString());
+        mediaPlayer = new MediaPlayer(media);
+        mediaPlayer.currentTimeProperty().addListener(new InvalidationListener() {
+            @Override
+            public void invalidated(Observable observable) {
+                updateSlider();
+            }
+        });
+        mediaPlayer.play();
+    }
 
     public void back(ActionEvent actionEvent) {
-
+        mediaPlayer.stop();
+        VideoPlayer4 videoPlayer4  =new VideoPlayer4();
+        Stage stage = new Stage();
+        VideoPlayer4.url = uri;
+        videoPlayer4.start(stage);
     }
 
     public void play(ActionEvent actionEvent) {
@@ -72,17 +132,20 @@ public class AudioPlayer implements Initializable {
     }
 
     public void next(ActionEvent actionEvent) {
+        int len = queueSongs.size();
+        index = (index+1)%len;
+        songName.setText(queueSongs.get(index));
         if (isLocal)
         {
-            int len = queueSongs.size();
-            index = (index+1)%len;
-            songName.setText(queueSongs.get(index));
-            File file = localSongController.getSongById(index);
-            media = new Media(file.toURI().toString());
+            file = localSongController.getSongById(index);
         }
         else {
-
+            uri = Controller.getSong(queueSongs.get(index));
+            setStream();
+            lyrics.setText("");
         }
+       // media = new Media(file.toURI().toString());
+        media = new Media(uri.toString());
         mediaPlayer.stop();
         mediaPlayer = new MediaPlayer(media);
         mediaPlayer.currentTimeProperty().addListener(new InvalidationListener() {
@@ -96,17 +159,20 @@ public class AudioPlayer implements Initializable {
 
     public void playNext()
     {
+        int len = queueSongs.size();
+        index = (index+1)%len;
+        songName.setText(queueSongs.get(index));
         if (isLocal)
         {
-            int len = queueSongs.size();
-            index = (index+1)%len;
-            songName.setText(queueSongs.get(index));
-            File file = localSongController.getSongById(index);
-            media = new Media(file.toURI().toString());
+            file = localSongController.getSongById(index);
         }
         else {
-
+            uri = Controller.getSong(queueSongs.get(index));
+            setStream();
+            lyrics.setText("");
         }
+       // media = new Media(file.toURI().toString());
+        media = new Media(uri.toString());
         mediaPlayer.stop();
         mediaPlayer = new MediaPlayer(media);
         mediaPlayer.currentTimeProperty().addListener(new InvalidationListener() {
@@ -120,17 +186,20 @@ public class AudioPlayer implements Initializable {
 
 
     public void previous(ActionEvent actionEvent) {
+        int len = queueSongs.size();
+        index = ((index-1)<0)?(len-1):(index-1);
+        songName.setText(queueSongs.get(index));
         if (isLocal)
         {
-            int len = queueSongs.size();
-            index = ((index-1)<0)?(len-1):(index-1);
-            songName.setText(queueSongs.get(index));
-            File file = localSongController.getSongById(index);
-            media = new Media(file.toURI().toString());
+            file = localSongController.getSongById(index);
         }
         else {
-
+            uri = Controller.getSong(queueSongs.get(index));
+            setStream();
+            lyrics.setText("");
         }
+       // media = new Media(file.toURI().toString());
+        media = new Media(uri.toString());
         mediaPlayer.stop();
         mediaPlayer = new MediaPlayer(media);
         mediaPlayer.currentTimeProperty().addListener(new InvalidationListener() {
@@ -166,6 +235,8 @@ public class AudioPlayer implements Initializable {
                 int sec = (int) totolsec%60;
                 String time2 = String.format("%2d:%2d",M,sec);
                 tTime.setText(time2);
+                if (!isLocal)
+                    setLyrics(seconds);
                 if (mediaPlayer.getCurrentTime().greaterThanOrEqualTo(mediaPlayer.getTotalDuration()))
                 {
                     playNext();
@@ -174,55 +245,22 @@ public class AudioPlayer implements Initializable {
         });
     }
 
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-        songName.setText(name);
-        queue.setItems(queueSongs);
-        slider.valueProperty().addListener(new InvalidationListener() {
-            @Override
-            public void invalidated(Observable observable) {
-                if (slider.isPressed())
-                {
-                    mediaPlayer.seek(mediaPlayer.getTotalDuration().multiply(slider.getValue()/100));
-                }
-                if (slider.getValue()==1.0)
-                    playNext();
-
-            }
-        });
-
-        if (mediaPlayer!=null)
-        {
-            status = mediaPlayer.getStatus();
-            if (status== MediaPlayer.Status.PLAYING || status== MediaPlayer.Status.PAUSED)
-                mediaPlayer.stop();
-        }
-
-        File file = songFiles.get(index);
-        media = new Media(file.toURI().toString());
-        mediaPlayer = new MediaPlayer(media);
-        mediaPlayer.currentTimeProperty().addListener(new InvalidationListener() {
-            @Override
-            public void invalidated(Observable observable) {
-                updateSlider();
-            }
-        });
-        mediaPlayer.play();
-    }
-
     public void shuffle(ActionEvent actionEvent) {
+        Random ran = new Random();
+        int len = queueSongs.size();
+        index = ran.nextInt(len);
+        songName.setText(queueSongs.get(index));
         if (isLocal)
         {
-            Random ran = new Random();
-            int len = queueSongs.size();
-            index = ran.nextInt(len);
-            File file = localSongController.getSongById(index);
-            songName.setText(queueSongs.get(index));
-            media = new Media(file.toURI().toString());
+            file = localSongController.getSongById(index);
         }
         else {
-
+            uri = Controller.getSong(queueSongs.get(index));
+            setStream();
+            lyrics.setText("");
         }
+       // media = new Media(file.toURI().toString());
+        media = new Media(uri.toString());
         status = mediaPlayer.getStatus();
         if (status == MediaPlayer.Status.PLAYING || status== MediaPlayer.Status.PAUSED)
             mediaPlayer.stop();
@@ -245,13 +283,16 @@ public class AudioPlayer implements Initializable {
         index = queue.getSelectionModel().getSelectedIndex();
         if (isLocal)
         {
-            File file = localSongController.getSongById(index);
-            songName.setText(queueSongs.get(index));
-            media = new Media(file.toURI().toString());
+             file = localSongController.getSongById(index);
         }
         else {
-
+             uri = Controller.getSong(queueSongs.get(index));
+             setStream();
+             lyrics.setText("");
         }
+        songName.setText(queueSongs.get(index));
+        //media = new Media(file.toURI().toString());
+        media = new Media(uri.toString());
         status = mediaPlayer.getStatus();
         if (status == MediaPlayer.Status.PLAYING || status== MediaPlayer.Status.PAUSED)
             mediaPlayer.stop();
@@ -299,5 +340,48 @@ public class AudioPlayer implements Initializable {
         }catch (IOException e){
 
         }
+    }
+
+    public void setLyrics(double seconds)
+    {
+        //double seconds = mediaPlayer.getCurrentTime().toSeconds();
+        int s = (int) seconds;
+        for (int i=0;i<start.size();i++)
+        {
+            if (s>start.get(i) && s<end.get(i))
+                lyrics.setText(subtitle.get(i));
+        }
+
+    }
+
+    public void setStream()
+    {
+        System.out.println(srtFile.getName());
+        try {
+            inputStream = new FileInputStream(srtFile);
+            reader = new BufferedReader(new InputStreamReader(inputStream));
+            ExtractLyrics(reader);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void like(ActionEvent actionEvent) {
+        handleServer handle = new handleServer();
+        handle.LikeOrDisLike("liked", Controller.Username,id+"");
+    }
+
+    public void DisLike(ActionEvent actionEvent) {
+        handleServer handle = new handleServer();
+        handle.LikeOrDisLike("disliked", Controller.Username,id+"");
+    }
+
+    public void download(ActionEvent actionEvent) {
+    }
+
+    public void swipe(SwipeEvent swipeEvent) {
+        int i = queue.getSelectionModel().getSelectedIndex();
+        queueSongs.remove(i);
+        queue.setItems(queueSongs);
     }
 }

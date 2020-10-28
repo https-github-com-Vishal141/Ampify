@@ -12,12 +12,13 @@ import sample.handleServer;
 
 public class Create {
     public TextField name;
+    public static String USER;
     handleServer handle = new handleServer();
 
     public void create(ActionEvent actionEvent) throws Exception {
         if (name.getText()!=null && !name.getText().equals(""))
         {
-            if (handle.createPlaylist(Controller.Username,name.getText()))
+            if (handle.createPlaylist(USER,name.getText()))
             {
                 Stage stage = (Stage) name.getScene().getWindow();
                 Parent root = CustomPlaylistController.getRoot();

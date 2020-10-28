@@ -1,5 +1,6 @@
 package sample.LocalSong;
 
+import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.collections.FXCollections;
@@ -35,12 +36,17 @@ public class localSongController implements Initializable {
 
     public void setList()
     {
-        songs = getSongs(File.listRoots());
-        for (File f:songs)
-        {
-            list.add(f.getName().replace(".mp3",""));
-        }
-        myList.setItems(list);
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                songs = getSongs(File.listRoots());
+                for (File f:songs)
+                {
+                    list.add(f.getName().replace(".mp3",""));
+                }
+                myList.setItems(list);
+            }
+        });
     }
 
     public ArrayList<File> getSongs(File file[])
@@ -71,7 +77,6 @@ public class localSongController implements Initializable {
 
     public void gotoPlayer()
     {
-        AudioPlayer.songFiles = songs;
         Parent root = null;
         try {
             root = AudioPlayer.getRoot();
@@ -117,4 +122,5 @@ public class localSongController implements Initializable {
         stage.setScene(new Scene(root,600,700));
         stage.show();
     }
+
 }

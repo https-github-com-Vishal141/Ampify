@@ -8,12 +8,14 @@
    <children>
       <AnchorPane prefHeight="48.0" prefWidth="600.0">
          <children>
-            <Label fx:id="playlistName" layoutX="40.0" layoutY="13.0" text="playlist Name">
+            <Label fx:id="playlistName" layoutX="48.0" layoutY="12.0" text="playlist Name">
                <font>
                   <Font size="18.0" />
                </font>
             </Label>
             <Button fx:id="addSong" layoutX="477.0" layoutY="9.0" mnemonicParsing="false" onAction="#AddSong" text="add song" />
+            <Button mnemonicParsing="false" onAction="#back" text="back" />
+            <Button fx:id="share" layoutX="395.0" layoutY="9.0" mnemonicParsing="false" onAction="#Share" text="share" />
          </children>
       </AnchorPane>
       <AnchorPane layoutY="47.0" prefHeight="352.0" prefWidth="600.0">
