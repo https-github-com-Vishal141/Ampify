@@ -1,5 +1,6 @@
 package server;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -10,6 +11,7 @@ public class Server {
 
     public void getClient()
     {
+        //System.out.print(files[0]);
         try {
             serverSocket = new ServerSocket(4870);
             System.out.println("waiting");

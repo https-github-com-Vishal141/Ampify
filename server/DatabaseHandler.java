@@ -197,6 +197,8 @@ public class DatabaseHandler {
         String query1 = "INSERT INTO playlists VALUES(?,?)";
         String query2 = "CREATE TABLE "+uname+"_"+name+"(Id int primary key)";
         try{
+            if(checkPlaylist(uname,name))
+                return false;
             connection = getConnection();
             preparedStatement = connection.prepareStatement(query1);
             preparedStatement.setString(1,uname);
@@ -291,21 +293,119 @@ public class DatabaseHandler {
             }
         }
     }
-
-    public boolean likeOrDislike(String uname,String status,int id)
+    
+    public boolean checkForLike(String uname,int id)
     {
         Connection connection=null;
         PreparedStatement preparedStatement=null;
-        String query = "INSERT INTO ? VALUES(?,?)";
+        String query = "SELECT * FROM LIKED WHERE username=? AND songId=?";
+        try{
+            connection = getConnection();
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1,uname);
+             preparedStatement.setInt(2,id);
+             rs = preparedStatement.executeQuery();
+             if(rs.next())
+                 return true;
+             return false;
+        }catch(SQLException e)
+        {
+            return false;
+        }finally {
+            try {
+                connection.close();
+                preparedStatement.close();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+    }
+    
+     public boolean checkForDisLike(String uname,int id)
+    {
+        Connection connection=null;
+        PreparedStatement preparedStatement=null;
+        String query = "SELECT * FROM disliked WHERE username=? AND songId=?";
+        try{
+            connection = getConnection();
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1,uname);
+             preparedStatement.setInt(2,id);
+             rs = preparedStatement.executeQuery();
+             if(rs.next())
+                 return true;
+             return false;
+        }catch(SQLException e)
+        {
+            return false;
+        }finally {
+            try {
+                connection.close();
+                preparedStatement.close();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+    }
+     
+    public void deleteFrom(String status,String uname,int id)
+    {
+        Connection connection=null;
+        PreparedStatement preparedStatement=null;
+        String query = "DELETE FROM ? WHERE username=? AND songId=?";
         try{
             connection = getConnection();
             preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1,status);
             preparedStatement.setString(2,uname);
             preparedStatement.setInt(3,id);
+            preparedStatement.execute();          
+        }catch (Exception e){
+            
+        }
+        finally {
+            try {
+                connection.close();
+                preparedStatement.close();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public boolean likeOrDislike(String uname,String status,int id)
+    {
+        Connection connection=null;
+        PreparedStatement preparedStatement=null;
+        String query;
+        try{
+            connection = getConnection();
+            if(status.equals("liked"))
+            {
+                query = "INSERT INTO liked VALUES(?,?)";
+                if(checkForDisLike(uname,id))
+                    deleteFrom("disliked",uname,id);
+                else{
+                    if(checkForLike(uname,id))
+                        return true;
+                }
+            }
+            else{
+                query = "INSERT INTO disliked VALUES(?,?)";
+                if(checkForLike(uname,id))
+                    deleteFrom("liked",uname,id);
+                else{
+                    if(checkForDisLike(uname,id))
+                        return true;
+                }
+            }
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1,uname);
+            preparedStatement.setInt(2,id);
             preparedStatement.execute();
             return true;
         }catch (Exception e){
+             e.printStackTrace();
             return false;
         }
         finally {
@@ -322,13 +422,15 @@ public class DatabaseHandler {
     {
         Connection connection=null;
         PreparedStatement preparedStatement=null;
+        int count=0;
         String query = "SELECT COUNT(*) FROM History";
         String query1 = "INSERT INTO History VALUES(?,?,?,?,?,?)";
         try{
             connection = getConnection();
             preparedStatement = connection.prepareStatement(query);
             rs = preparedStatement.executeQuery();
-            int count = rs.getInt("COUNT(*)");
+            while(rs.next())
+                 count = rs.getInt("COUNT(*)");
             preparedStatement = connection.prepareStatement(query1);
             preparedStatement.setInt(1,count+1);
             preparedStatement.setString(2,uname);
@@ -360,7 +462,7 @@ public class DatabaseHandler {
         ArrayList<String> title = new ArrayList<String>();
         ArrayList<String> date = new ArrayList<String>();
         ArrayList<String> time = new ArrayList<String>();
-        String query = "SELECT songId,date,time FROM history WHERE username=?";
+        String query = "SELECT songId,date,time FROM history WHERE username=? ORDER BY Serial_no DESC";
         try{
             connection = getConnection();
             preparedStatement = connection.prepareStatement(query);
@@ -423,6 +525,7 @@ public class DatabaseHandler {
     public ArrayList<String> getAllSong()
     {
         ArrayList<String> songs= new ArrayList<String>();
+        ArrayList<String> artist = new ArrayList<String>();
         Connection connection=null;
         PreparedStatement pr=null;
         String query = "SELECT Title,Artist FROM songs";
@@ -432,7 +535,7 @@ public class DatabaseHandler {
             rs = pr.executeQuery();
             while(rs.next())
             {
-                songs.add(rs.getString("Title")+"\t"+rs.getString("Artist"));
+                songs.add(rs.getString("Title"));
             }
             return songs;
         }catch(SQLException e){
@@ -615,7 +718,7 @@ public class DatabaseHandler {
             pr.setString(3, item);
             rs = pr.executeQuery();
             while(rs.next())
-                id.add(rs.getInt("ID"));
+                id.add(rs.getInt("Id"));
             return id;
         }catch(SQLException e){
             return id;
@@ -633,14 +736,22 @@ public class DatabaseHandler {
     {
         Connection connection=null;
         PreparedStatement preparedStatement=null;
-        String query = "UPDATE Songs SET Views=Views+1 WHERE Id = ?";
+        int total=0;
+        String query1 = "SELECT Views FROM Songs WHERE Id=?";
         try{
             connection = getConnection();
-            preparedStatement = connection.prepareStatement(query);
+            preparedStatement = connection.prepareStatement(query1);
             preparedStatement.setInt(1,songId);
+            rs = preparedStatement.executeQuery();
+            if(rs.next())
+                total = rs.getInt("Views");
+            String query = "UPDATE Songs SET Views=? WHERE Id=?";
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, total+1);
+            preparedStatement.setInt(2,songId);
             preparedStatement.execute();
         }catch (SQLException e){
-
+            e.printStackTrace();
         }finally {
             try {
                 connection.close();
@@ -685,11 +796,11 @@ public class DatabaseHandler {
         }
     }
 
-    public ArrayList<Integer> getRecent(String uname)
+    public Set<Integer> getRecent(String uname)
     {
         Connection connection=null;
         PreparedStatement preparedStatement=null;
-        ArrayList<Integer> Ids = new ArrayList<Integer>();
+        Set<Integer> Ids = new LinkedHashSet<Integer>();
         String query = "SELECT songId FROM History WHERE username=? ORDER BY serial_no DESC";
         try{
             connection = getConnection();
@@ -717,7 +828,7 @@ public class DatabaseHandler {
     {
         Connection connection=null;
         PreparedStatement preparedStatement=null;
-        Set<Integer> Ids = new HashSet<Integer>();
+        Set<Integer> Ids = new LinkedHashSet<Integer>();
         ArrayList<Integer> ids = new ArrayList<Integer>();
         String query = "SELECT songId FROM history WHERE hour<? AND hour>? AND username=?";
         try {
@@ -730,7 +841,7 @@ public class DatabaseHandler {
             while (rs.next())
                 ids.add(rs.getInt("songId"));
             String artist,album;
-            String query2 = "SELECT songId FROM Songs WHERE Artist=? OR Album=?";
+            String query2 = "SELECT Id FROM Songs WHERE Artist=? OR Album=?";
             preparedStatement = connection.prepareStatement(query2);
             int i=1;
             for (int id:ids)
@@ -741,7 +852,7 @@ public class DatabaseHandler {
                 preparedStatement.setString(2,album);
                 rs = preparedStatement.executeQuery();
                 while (rs.next())
-                    Ids.add(rs.getInt("songId"));
+                    Ids.add(rs.getInt("Id"));
                 if (i==5)
                     break;
                 i++;
@@ -773,7 +884,7 @@ public class DatabaseHandler {
         Connection connection=null;
         PreparedStatement preparedStatement=null;
 
-        Set<Integer> Ids = new HashSet<Integer>();
+        Set<Integer> Ids = new LinkedHashSet<Integer>();
         ArrayList<Integer> likes = new ArrayList<Integer>();
         ArrayList<Integer> id = new ArrayList<Integer>();
         String query = "SELECT COUNT(*) FROM Liked WHERE songId=?";
@@ -823,6 +934,221 @@ public class DatabaseHandler {
             }
         }
     }
+    
+    public boolean checkUser(String uname)
+    {
+        Connection connection=null;
+        PreparedStatement ps = null;
+        String query = "SELECT username FROM users WHERE username=?";
+        try{
+            connection = getConnection();
+            ps = connection.prepareStatement(query);
+            ps.setString(1,uname);
+            rs = ps.executeQuery();
+            if(rs.next())
+                return true;
+            return false;
+        }catch(SQLException e)
+        {
+            e.printStackTrace();
+            return false;
+        }finally {
+            try {
+                connection.close();
+                ps.close();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+    }
+    
+    public boolean checkPlaylist(String uname,String name)
+    {
+        Connection connection=null;
+        PreparedStatement ps=null;
+        String query = "SELECT * FROM playlists WHERE username=? AND name=?";
+        try{
+            connection=getConnection();
+            ps = connection.prepareStatement(query);
+            ps.setString(1,uname);
+            ps.setString(2,name);
+            rs = ps.executeQuery();
+            if(rs.next())
+                return true;
+            return false;
+        }catch(SQLException e){
+            e.printStackTrace();
+            return true;
+        }finally {
+            try {
+                connection.close();
+                ps.close();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+    }
+    
+    public void sharePlaylist(String uname1,String pname,String uname2)
+    {
+        Connection connection=null;
+        PreparedStatement ps=null;
+        String query = "INSERT INTO "+uname2+"_"+pname+" SELECT * FROM "+uname1+"_"+pname;
+        if(createPlaylist(uname2,pname))
+        {
+            try
+           {
+               connection = getConnection();
+               ps = connection.prepareStatement(query);
+               ps.execute();
+           }catch(SQLException e){
+               e.printStackTrace();
+           }finally {
+               try {
+                   connection.close();
+                   ps.close();
+               }catch (Exception e){
+                   e.printStackTrace();
+               }
+           }
+        }
+    }
+    
+    public boolean createGroup(String admin,String name)
+    {
+        Connection connection=null;
+        PreparedStatement ps=null;
+        String query = "INSERT INTO groupsTable(admin,name,username) VALUES(?,?,?)";
+         try
+           {
+               if(checkGroup(name))
+                   return false;
+               connection = getConnection();
+               ps = connection.prepareStatement(query);
+               ps.setString(1, admin);
+               ps.setString(2, name);
+               ps.setString(3, admin);
+               ps.execute();
+               return true;
+           }catch(SQLException e){
+               e.printStackTrace();
+               return false;
+           }finally {
+               try {
+                   connection.close();
+                   ps.close();
+               }catch (Exception e){
+                   e.printStackTrace();
+               }
+           }
+    }
+    
+    public Set<String> getGroups(String uname)
+    {
+        Set<String> groups = new LinkedHashSet<String>();
+        Connection connection=null;
+        PreparedStatement ps = null;
+        String query = "SELECT name FROM groupsTable WHERE username=?";
+        try{
+            connection = getConnection();
+            ps = connection.prepareStatement(query);
+            ps.setString(1,uname);
+            rs = ps.executeQuery();
+            while(rs.next())
+                groups.add(rs.getString("name"));
+            return groups;
+        }catch(SQLException e)
+        {
+            e.printStackTrace();
+            return groups;
+        }finally {
+               try {
+                   connection.close();
+                   ps.close();
+               }catch (Exception e){
+                   e.printStackTrace();
+               }
+           }
+    }
+    
+    public void addUser(String gName,String uname)
+    {
+        Connection connection = null;
+        PreparedStatement ps = null;
+        String query="INSERT INTO groupsTable(name,username) VALUES(?,?)";
+        try{
+            connection = getConnection();
+            ps = connection.prepareStatement(query);
+            ps.setString(1,gName);
+            ps.setString(2,uname);
+            ps.execute();
+        }catch(SQLException e)
+        {
+            e.printStackTrace();
+        }finally {
+               try {
+                   connection.close();
+                   ps.close();
+               }catch (Exception e){
+                   e.printStackTrace();
+               }
+           }
+    }
+    
+    public Set<String> getUsers(String name)
+    {
+        Set<String> users = new LinkedHashSet<String>();
+        Connection connection = null;
+        PreparedStatement ps = null;
+        String query = "SELECT username FROM groupsTable WHERE name=?";
+        try{
+            connection = getConnection();
+            ps = connection.prepareStatement(query);
+            ps.setString(1,name);
+            rs = ps.executeQuery();
+            while(rs.next())
+                users.add(rs.getString("username"));
+            return users;
+        }catch(SQLException e)
+        {
+            e.printStackTrace();
+            return users;
+        }finally {
+               try {
+                   connection.close();
+                   ps.close();
+               }catch (Exception e){
+                   e.printStackTrace();
+               }
+           }
+    }
+    
+    public boolean checkGroup(String name)
+    {
+        Connection connection=null;
+        PreparedStatement ps = null;
+        String query = "SELECT admin FROM groupsTable WHERE name=?";
+        try{
+            connection = getConnection();
+            ps = connection.prepareStatement(query);
+            rs = ps.executeQuery();
+            if(rs.next())
+                return true;
+            return false;
+        }catch(SQLException e)
+        {
+            e.printStackTrace();
+            return true;
+        }finally {
+               try {
+                   connection.close();
+                   ps.close();
+               }catch (Exception e){
+                   e.printStackTrace();
+               }
+           }
+    }
+    
 }
 
 

@@ -2,8 +2,13 @@ package server;
 
 import java.io.*;
 import java.net.Socket;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.GregorianCalendar;
 import java.util.Set;
+import java.util.LinkedHashSet;
+import java.util.Calendar;
+
 
 
 public class clientHandler extends DatabaseHandler implements Runnable {
@@ -22,16 +27,19 @@ public class clientHandler extends DatabaseHandler implements Runnable {
     public ArrayList<String> trendingTitle=new ArrayList<String>();
     public Set<Integer> recomOnLike;
     public Set<Integer> recomOnTime;
+    public Set<String> groups;
+    public Set<String> Title = new LinkedHashSet<>();
     public ArrayList<String> Playlists;
     public ArrayList[] history;
     
-    public File file = new File("song");
-    public File[] files;
+    //public File file = new File("\\song");
+    File[] files = new File("E:/nbProjects/Server/src/server/song").listFiles();
+    File[] srtfiles = new File("E:/nbProjects/Server/src/server/srt").listFiles();
     
     public clientHandler(Socket s)
     {
         try {
-            files = file.listFiles();
+           // files = file.listFiles();
             this.socket = s;
             this.is = socket.getInputStream();
             this.os = socket.getOutputStream();
@@ -86,20 +94,31 @@ public class clientHandler extends DatabaseHandler implements Runnable {
                                ps.println("userExist");
                        }
                        break;
-                   case "song":
+                   case "getSong":
                        Id = dis.readUTF();
                        id = Integer.parseInt(Id);
-                       File file = files[id];
+                       File file = files[id-1];
+                      // URI uri = file.toURI();
+                       URL url = file.toURL();
+                       objectOutputStream.writeObject(url);
+                       objectOutputStream.flush();
+                       break;
+                   case "getSrt":
+                       Id = dis.readUTF();
+                       id = Integer.parseInt(Id);
+                       file = srtfiles[id-1];
                        objectOutputStream.writeObject(file);
                        objectOutputStream.flush();
                        break;
                    case "recent":
                        uname = dis.readUTF();
-                       recent = getRecent(uname);
+                       recomOnTime = getRecent(uname);
                        objectOutputStream.writeObject(recent);
-                       for(int songId:recent){
+                       for(int songId:recomOnTime){
                            recentTitle.add(getSongTitle(songId));
                        }
+                      // System.out.println(recomOnTime);
+                       //System.out.println(recentTitle);
                        objectOutputStream.writeObject(recentTitle);
                        objectOutputStream.flush();
                        break;
@@ -134,6 +153,15 @@ public class clientHandler extends DatabaseHandler implements Runnable {
                        history = getHistory(uname);
                        objectOutputStream.writeObject(history);
                        objectOutputStream.flush();
+                       break;
+                   case "addToHistory":
+                       uname = dis.readUTF();
+                       Id = dis.readUTF();
+                       String date = dis.readUTF();
+                       time = dis.readUTF();
+                       String hour = dis.readUTF();
+                       id = Integer.parseInt(Id);
+                       addToHistory(uname,id,time,date,hour);
                        break;
                    case "createPlaylist":
                        uname = dis.readUTF();
@@ -178,7 +206,7 @@ public class clientHandler extends DatabaseHandler implements Runnable {
                        Id = dis.readUTF();
                        id = Integer.parseInt(Id);
                        ps.println("doing");
-                       if(likeOrDislike(status,uname,id))
+                       if(likeOrDislike(uname,status,id))
                            ps.println("done");
                        else
                            ps.println("error");
@@ -211,12 +239,92 @@ public class clientHandler extends DatabaseHandler implements Runnable {
                        uname = dis.readUTF();
                        item = dis.readUTF();
                        addToSearchHistory(uname,item);
+                       break;   
+                   case "increaseView":
+                       Id = dis.readUTF();
+                       id = Integer.parseInt(Id);
+                       increaseView(id);
+                       break;
+                   case "share":
+                       uname = dis.readUTF();
+                       String pname = dis.readUTF();
+                       String uname2 = dis.readUTF();
+                       ps.println("doing");
+                       if(checkPlaylist(uname2,pname))
+                       {
+                           ps.println("playlist exist");
+                           break;
+                       }
+                       if(checkUser(uname2))
+                       {
+                           sharePlaylist(uname,pname,uname2);
+                           ps.println("shared");
+                       }
+                       else
+                           ps.println("user not exist");
+                       break;
+                   case "insertDetail":
+                       //System.out.println("hello");
+                       String type = dis.readUTF();
+                       uname = dis.readUTF();
+                       String detail = dis.readUTF();
+                       //System.out.println(type);
+                       if(type.equals("language"))
+                           insertIntolanguage(uname,detail);
+                       else
+                       {
+                           if(type.equals("artist"))
+                               insertIntoArtist(uname,detail);
+                           else
+                               insertIntoGeneres(uname,detail);
+                       }
+                       break;
+                   case "createGroup":
+                       uname = dis.readUTF();
+                       name = dis.readUTF();
+                       ps.println("creating");
+                       if(createGroup(uname,name))
+                           ps.println("true");
+                       else
+                           ps.println("group exist");
+                       break;
+                   case "getGroups":
+                       uname = dis.readUTF();
+                       groups = getGroups(uname);
+                       objectOutputStream.writeObject(groups);
+                       objectOutputStream.flush();
+                       break;
+                   case "groupDetails":
+                       name = dis.readUTF();
+                       groups = getUsers(name);
+                       trending = getTrending();
+                       for(int songId:trending){
+                           Title.add(getSongTitle(songId));
+                       }
+                       objectOutputStream.writeObject(Title);
+                       objectOutputStream.writeObject(groups);
+                       objectOutputStream.flush();
+                       break;
+                   case "addUser":
+                       name = dis.readUTF();
+                       uname = dis.readUTF();
+                       ps.println("adding");
+                       if(checkUser(uname))
+                       {
+                           addUser(name,uname);
+                           ps.println("done");
+                       }
+                       else{
+                           ps.println("user do not exist");
+                       }
+                           
                        break;
                }
+              
 
            }catch (Exception e){
                e.printStackTrace();
-           }
+           }       
     }
 }
 
