@@ -19,6 +19,7 @@ import sample.CustomPlaylist.CustomPlaylistController;
 import sample.Group.CreateGroup;
 import sample.Group.group;
 import sample.History.HistoryController;
+import sample.History.Liked;
 import sample.LocalSong.LocalVideoController;
 import sample.LocalSong.localSongController;
 import sample.Player.AudioPlayer;
@@ -152,8 +153,12 @@ public class Controller implements Initializable {
         stage.show();
     }
 
-    public void likes(ActionEvent actionEvent) {
-
+    public void likes(ActionEvent actionEvent) throws Exception{
+        Stage stage = (Stage) username.getScene().getWindow();
+        Parent root = Liked.getRoot();
+        stage.setTitle("Local Songs");
+        stage.setScene(new Scene(root,600,600));
+        stage.show();
     }
 
     public void local_music(ActionEvent actionEvent) throws Exception{

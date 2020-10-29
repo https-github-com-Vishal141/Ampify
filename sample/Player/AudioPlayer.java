@@ -9,13 +9,13 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.SwipeEvent;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 import sample.Controller;
-import sample.Equalizer.VideoPlayer4;
 import sample.LocalSong.localSongController;
 import sample.handleServer;
 
@@ -105,11 +105,7 @@ public class AudioPlayer implements Initializable {
     }
 
     public void back(ActionEvent actionEvent) {
-        mediaPlayer.stop();
-        VideoPlayer4 videoPlayer4  =new VideoPlayer4();
-        Stage stage = new Stage();
-        VideoPlayer4.url = uri;
-        videoPlayer4.start(stage);
+
     }
 
     public void play(ActionEvent actionEvent) {
@@ -383,5 +379,13 @@ public class AudioPlayer implements Initializable {
         int i = queue.getSelectionModel().getSelectedIndex();
         queueSongs.remove(i);
         queue.setItems(queueSongs);
+    }
+
+    public void gotoEqualizer(ActionEvent actionEvent) throws Exception{
+        Stage stage = new Stage();
+        Parent root = FXMLLoader.load(getClass().getResource("equalizer.fxml"));
+        stage.setTitle("Equalizer");
+        stage.setScene(new Scene(root,400,400));
+        stage.show();
     }
 }

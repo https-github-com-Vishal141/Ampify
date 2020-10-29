@@ -611,10 +611,10 @@ public class handleServer
 
     }
 
-    public void insertDetail(String uname,String detail,String type)
+    public void Details(String uname,String detail,String type)
     {
         try {
-            dos.writeUTF("insertDetail");
+            dos.writeUTF("details");
             dos.writeUTF(type);
             dos.writeUTF(uname);
             dos.writeUTF(detail);
@@ -729,6 +729,32 @@ public class handleServer
         } catch (IOException e) {
             e.printStackTrace();
             return result;
+        }finally {
+            try {
+                socket.close();
+                dis.close();
+                dos.close();
+                br.close();
+                //  objectInputStream.close();
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public Set<String> getLiked(String uname)
+    {
+        Set<String> likes=null;
+        try {
+            dos.writeUTF("liked");
+            dos.writeUTF(uname);
+            dos.flush();
+            objectInputStream = new ObjectInputStream(socket.getInputStream());
+            likes = (Set<String>) objectInputStream.readObject();
+            return likes;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return likes;
         }finally {
             try {
                 socket.close();

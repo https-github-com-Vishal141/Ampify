@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="400.0" prefWidth="436.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Player.Equalizer">
+   <children>
+      <Slider fx:id="s1" layoutX="85.0" layoutY="73.0" orientation="VERTICAL" prefHeight="252.0" prefWidth="14.0" />
+      <Slider fx:id="s2" layoutX="134.0" layoutY="71.0" orientation="VERTICAL" prefHeight="252.0" prefWidth="14.0" />
+      <Slider fx:id="s3" layoutX="184.0" layoutY="75.0" orientation="VERTICAL" prefHeight="246.0" prefWidth="14.0" />
+      <Slider fx:id="s4" layoutX="241.0" layoutY="75.0" orientation="VERTICAL" prefHeight="246.0" prefWidth="14.0" />
+      <Slider fx:id="s5" layoutX="314.0" layoutY="75.0" orientation="VERTICAL" prefHeight="246.0" prefWidth="14.0" />
+   </children>
+</AnchorPane>
