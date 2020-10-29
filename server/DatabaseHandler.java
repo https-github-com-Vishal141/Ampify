@@ -1149,6 +1149,38 @@ public class DatabaseHandler {
            }
     }
     
+    public Set<String> getLiked(String uname)
+    {
+        ResultSet rs2;
+        Set<String> likes = new LinkedHashSet<String>();
+        Connection connection=null;
+        PreparedStatement ps = null;
+        String query = "SELECT songId FROM liked WHERE username=?";
+        try{
+            connection = getConnection();
+            ps = connection.prepareStatement(query);
+            ps.setString(1,uname);
+            rs2 = ps.executeQuery();
+            while(rs2.next())
+            {
+                int id = rs2.getInt("songId");
+                likes.add(getSongTitle(id));
+            }
+            return likes;
+        }catch(SQLException e)
+        {
+            e.printStackTrace();
+           return likes;
+        }finally {
+               try {
+                   connection.close();
+                   ps.close();
+               }catch (Exception e){
+                   e.printStackTrace();
+               }
+           }
+    }
+    
 }
 
 

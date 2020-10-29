@@ -8,6 +8,7 @@ import java.util.GregorianCalendar;
 import java.util.Set;
 import java.util.LinkedHashSet;
 import java.util.Calendar;
+import java.util.Collections;
 
 
 
@@ -263,12 +264,12 @@ public class clientHandler extends DatabaseHandler implements Runnable {
                        else
                            ps.println("user not exist");
                        break;
-                   case "insertDetail":
-                       //System.out.println("hello");
+                   case "details":
+                       System.out.println("hello");
                        String type = dis.readUTF();
                        uname = dis.readUTF();
                        String detail = dis.readUTF();
-                       //System.out.println(type);
+                       System.out.println(type);
                        if(type.equals("language"))
                            insertIntolanguage(uname,detail);
                        else
@@ -319,12 +320,30 @@ public class clientHandler extends DatabaseHandler implements Runnable {
                        }
                            
                        break;
+                   case "liked":
+                       uname = dis.readUTF();
+                       groups = getLiked(uname);
+                       objectOutputStream.writeObject(groups);
+                       objectOutputStream.flush();
+                       break;
                }
               
 
            }catch (Exception e){
                e.printStackTrace();
-           }       
+           }finally{
+               try {
+                socket.close();
+                dis.close();
+                dos.close();
+                br.close();
+                ps.close();
+                objectOutputStream.close();
+                //  objectInputStream.close();
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+           }      
     }
 }
 
