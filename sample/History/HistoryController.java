@@ -75,7 +75,19 @@ public class HistoryController  implements Initializable {
                     stage.close();
                     AudioPlayer.mediaPlayer.stop();
                 }
+                else
+                {
+                    if (AudioPlayer.stage!=null)
+                    {
+                        if (AudioPlayer.stage.isShowing())
+                        {
+                            AudioPlayer.stage.close();
+                            AudioPlayer.mediaPlayer.stop();
+                        }
+                    }
+                }
                 AudioPlayer.isLocal = false;
+                AudioPlayer.queueSongs.clear();
                 AudioPlayer.queueSongs.addAll(songTitle);
                 gotoPlayer();
             }
@@ -100,6 +112,7 @@ public class HistoryController  implements Initializable {
         }
         stage.setTitle("Music Player");
         stage.setScene(new Scene(root,600,600));
+        AudioPlayer.stage = stage;
         stage.show();
     }
 }

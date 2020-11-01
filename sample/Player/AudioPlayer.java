@@ -22,6 +22,12 @@ import sample.handleServer;
 import java.io.*;
 import java.net.URI;
 import java.net.URL;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.ResourceBundle;
@@ -49,11 +55,14 @@ public class AudioPlayer implements Initializable {
     public static File srtFile;
     public FileInputStream inputStream=null;
     public BufferedReader reader;
+    public static Stage stage;
     File file;
+    String path;
     URL uri;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        checkVideo();
         songName.setText(name);
         queue.setItems(queueSongs);
         if (isLocal)
@@ -87,13 +96,18 @@ public class AudioPlayer implements Initializable {
         }
 
         if (isLocal)
-             file = localSongController.getSongById(index);
+        {
+            file = localSongController.getSongById(index);
+            path = file.toURI().toString();
+        }
         else {
+           // System.out.println(index);
             uri = Controller.getSong(queueSongs.get(index));
+            path = uri.toString();
             setStream();
         }
        // media = new Media(file.toURI().toString());
-        media = new Media(uri.toString());
+        media = new Media(path);
         mediaPlayer = new MediaPlayer(media);
         mediaPlayer.currentTimeProperty().addListener(new InvalidationListener() {
             @Override
@@ -104,8 +118,9 @@ public class AudioPlayer implements Initializable {
         mediaPlayer.play();
     }
 
-    public void back(ActionEvent actionEvent) {
-
+    public void exit(ActionEvent actionEvent) {
+        mediaPlayer.stop();
+        stage.close();
     }
 
     public void play(ActionEvent actionEvent) {
@@ -134,14 +149,16 @@ public class AudioPlayer implements Initializable {
         if (isLocal)
         {
             file = localSongController.getSongById(index);
+            path = file.toURI().toString();
         }
         else {
             uri = Controller.getSong(queueSongs.get(index));
+            path = uri.toString();
             setStream();
             lyrics.setText("");
         }
        // media = new Media(file.toURI().toString());
-        media = new Media(uri.toString());
+        media = new Media(path);
         mediaPlayer.stop();
         mediaPlayer = new MediaPlayer(media);
         mediaPlayer.currentTimeProperty().addListener(new InvalidationListener() {
@@ -161,14 +178,16 @@ public class AudioPlayer implements Initializable {
         if (isLocal)
         {
             file = localSongController.getSongById(index);
+            path = file.toURI().toString();
         }
         else {
             uri = Controller.getSong(queueSongs.get(index));
+            path = uri.toString();
             setStream();
             lyrics.setText("");
         }
        // media = new Media(file.toURI().toString());
-        media = new Media(uri.toString());
+        media = new Media(path);
         mediaPlayer.stop();
         mediaPlayer = new MediaPlayer(media);
         mediaPlayer.currentTimeProperty().addListener(new InvalidationListener() {
@@ -188,14 +207,16 @@ public class AudioPlayer implements Initializable {
         if (isLocal)
         {
             file = localSongController.getSongById(index);
+            path = file.toURI().toString();
         }
         else {
             uri = Controller.getSong(queueSongs.get(index));
+            path = uri.toString();
             setStream();
             lyrics.setText("");
         }
        // media = new Media(file.toURI().toString());
-        media = new Media(uri.toString());
+        media = new Media(path);
         mediaPlayer.stop();
         mediaPlayer = new MediaPlayer(media);
         mediaPlayer.currentTimeProperty().addListener(new InvalidationListener() {
@@ -249,14 +270,16 @@ public class AudioPlayer implements Initializable {
         if (isLocal)
         {
             file = localSongController.getSongById(index);
+            path = file.toURI().toString();
         }
         else {
             uri = Controller.getSong(queueSongs.get(index));
+            path = uri.toString();
             setStream();
             lyrics.setText("");
         }
        // media = new Media(file.toURI().toString());
-        media = new Media(uri.toString());
+        media = new Media(path);
         status = mediaPlayer.getStatus();
         if (status == MediaPlayer.Status.PLAYING || status== MediaPlayer.Status.PAUSED)
             mediaPlayer.stop();
@@ -280,15 +303,17 @@ public class AudioPlayer implements Initializable {
         if (isLocal)
         {
              file = localSongController.getSongById(index);
+             path = file.toURI().toString();
         }
         else {
              uri = Controller.getSong(queueSongs.get(index));
+             path = uri.toString();
              setStream();
              lyrics.setText("");
         }
         songName.setText(queueSongs.get(index));
         //media = new Media(file.toURI().toString());
-        media = new Media(uri.toString());
+        media = new Media(path);
         status = mediaPlayer.getStatus();
         if (status == MediaPlayer.Status.PLAYING || status== MediaPlayer.Status.PAUSED)
             mediaPlayer.stop();
@@ -373,6 +398,50 @@ public class AudioPlayer implements Initializable {
     }
 
     public void download(ActionEvent actionEvent) {
+        Path path = createPath();
+        if (path!=null)
+        {
+            try {
+                FileInputStream inputStream = new FileInputStream(uri.getFile());
+                FileOutputStream outputStream = new FileOutputStream(path.toFile());
+                outputStream.write(inputStream.readAllBytes());
+                inputStream.close();
+                outputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        else
+        {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText(null);
+            alert.setContentText("Already Downloaded");
+            alert.show();
+        }
+    }
+
+    public Path createPath()
+    {
+        File[] files = File.listRoots();
+        String path = files[1]+"Ampify";
+        String path1 = path+"\\"+srtFile.getName().substring(0,srtFile.getName().indexOf("."))+".v4";
+        Path p = Paths.get(path);
+        Path P=null;
+        if (!Files.exists(p))
+        {
+            try {
+                Files.createDirectory(p);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        try {
+             if (!Files.exists(Paths.get(path1)))
+                 P = Files.createFile(Paths.get(path1));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return P;
     }
 
     public void swipe(SwipeEvent swipeEvent) {
@@ -387,5 +456,15 @@ public class AudioPlayer implements Initializable {
         stage.setTitle("Equalizer");
         stage.setScene(new Scene(root,400,400));
         stage.show();
+    }
+
+    public void checkVideo()
+    {
+        if (VideoPlayer.stage!=null) {
+            if (VideoPlayer.stage.isShowing()) {
+                VideoPlayer.player.stop();
+                stage.close();
+            }
+        }
     }
 }

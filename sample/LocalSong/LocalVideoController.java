@@ -14,7 +14,9 @@ import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.media.Media;
 import javafx.stage.Stage;
+import jdk.jshell.Snippet;
 import sample.Controller;
+import sample.Player.AudioPlayer;
 import sample.Player.VideoPlayer;
 
 import java.io.File;
@@ -26,19 +28,24 @@ public class LocalVideoController implements Initializable {
     @FXML
     ListView<String > videoList;
 
-    ObservableList<String> list = FXCollections.observableArrayList();
-    ArrayList<File> videos = new ArrayList<>();
-
+    public static ObservableList<String> list = FXCollections.observableArrayList();
+    static ArrayList<File>  videos = new ArrayList<>();
+    public static boolean isFirst=true;
+    Stage stage=new Stage();
 
     public void setList()
     {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                videos = getVideos(File.listRoots());
-                for (File f:videos)
+                if (isFirst)
                 {
-                    list.add(f.getName().replace(".mp4",""));
+                    videos= getVideos(File.listRoots());
+                    for (File f:videos)
+                    {
+                        list.add(f.getName().replace(".mp4",""));
+                    }
+                    isFirst=false;
                 }
                 videoList.setItems(list);
             }
@@ -78,22 +85,26 @@ public class LocalVideoController implements Initializable {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 int index = videoList.getSelectionModel().getSelectedIndex();
-                File file = videos.get(index);
-                Media media = new Media(file.toURI().toString());
-                if (VideoPlayer.status)
+                VideoPlayer.index = index;
+                if (stage.isShowing())
                 {
-                    VideoPlayer.mediaPlayer.stop();
+                    VideoPlayer.player.stop();
+                    stage.close();
                 }
-                VideoPlayer.status = true;
-                VideoPlayer.media = media;
+                else
+                {
+                    if (VideoPlayer.stage!=null)
+                    {
+                        if (VideoPlayer.stage.isShowing())
+                        {
+                            VideoPlayer.player.stop();
+                            VideoPlayer.stage.close();
+                        }
+                    }
+                }
                 VideoPlayer.Name=videoList.getSelectionModel().getSelectedItem();
-                VideoPlayer.previousName= "Local Videos";
-                try {
-                    VideoPlayer.previousRoot = getParent();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                Stage stage = (Stage) videoList.getScene().getWindow();
+                VideoPlayer.queueSongs.addAll(list);
+                VideoPlayer.stage = stage;
                 Parent root = null;
                 try {
                     root = VideoPlayer.getRoot();
@@ -101,17 +112,34 @@ public class LocalVideoController implements Initializable {
                     e.printStackTrace();
                 }
                 stage.setTitle("Player");
-                stage.setScene(new Scene(root,600,600));
+                stage.setScene(new Scene(root,800,600));
                 stage.show();
             }
         });
     }
 
     public void back(ActionEvent actionEvent) throws Exception{
-        Stage stage = (Stage) videoList.getScene().getWindow();
-        Parent root = Controller.getRoot();
-        stage.setTitle("Ampify");
-        stage.setScene(new Scene(root,600,700));
-        stage.show();
+        if (localSongController.isLogin)
+        {
+            Stage stage = (Stage) videoList.getScene().getWindow();
+            Parent root = Controller.getRoot();
+            stage.setTitle("Ampify");
+            stage.setScene(new Scene(root,600,700));
+            stage.show();
+        }
+        else
+        {
+            Stage stage = (Stage) videoList.getScene().getWindow();
+            Parent root = localSongController.getParent();
+            stage.setTitle("local Music");
+            stage.setScene(new Scene(root,600,700));
+            stage.show();
+        }
     }
+
+    public static File getVideoById(int index)
+    {
+        return videos.get(index);
+    }
+
 }

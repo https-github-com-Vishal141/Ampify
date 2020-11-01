@@ -10,6 +10,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import sample.Controller;
+import sample.LocalSong.localSongController;
 import sample.handleServer;
 
 import java.io.IOException;
@@ -26,6 +27,7 @@ public class LoginController {
         if (username.getText()!=null && password.getText()!=null){
             if (handle.login(username.getText(),password.getText())){
                 Controller.Username = username.getText();
+                localSongController.isLogin=true;
                 Stage stage = (Stage) signIn.getScene().getWindow();
                 Parent root = Controller.getRoot();
                 stage.setTitle("Ampify");
@@ -60,5 +62,13 @@ public class LoginController {
     {
         Parent root = FXMLLoader.load(RegisterController.class.getResource("login.fxml"));
         return root;
+    }
+
+    public void back(ActionEvent actionEvent) throws Exception{
+        Stage stage = (Stage) signIn.getScene().getWindow();
+        Parent root = localSongController.getParent();
+        stage.setTitle("Songs");
+        stage.setScene(new Scene(root,600,600));
+        stage.show();
     }
 }

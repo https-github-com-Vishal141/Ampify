@@ -52,7 +52,9 @@ public class CustomPlaylistController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         Songs.clear();
+        System.out.println(pName);
         playlistName.setText(pName);
+        //System.out.println(USER);
         Ids = handle.getPlaylist(USER,pName);
         songList.setItems(Songs);
        songList.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -66,7 +68,19 @@ public class CustomPlaylistController implements Initializable {
                    stage.close();
                    AudioPlayer.mediaPlayer.stop();
                }
+               else
+               {
+                   if (AudioPlayer.stage!=null)
+                   {
+                       if (AudioPlayer.stage.isShowing())
+                       {
+                           AudioPlayer.stage.close();
+                           AudioPlayer.mediaPlayer.stop();
+                       }
+                   }
+               }
                AudioPlayer.isLocal = false;
+               AudioPlayer.queueSongs.clear();
                AudioPlayer.queueSongs.addAll(Songs);
                gotoPlayer();
            }
@@ -83,6 +97,7 @@ public class CustomPlaylistController implements Initializable {
         }
         stage.setTitle("Music Player");
         stage.setScene(new Scene(root,600,600));
+        AudioPlayer.stage = stage;
         stage.show();
     }
 

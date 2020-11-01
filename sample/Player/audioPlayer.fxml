@@ -14,7 +14,7 @@
                </font>
             </Label>
          </children></Pane>
-      <Button layoutY="1.0" mnemonicParsing="false" onAction="#back" text="back" />
+      <Button layoutY="1.0" mnemonicParsing="false" onAction="#exit" text="exit" />
       <HBox alignment="CENTER" layoutX="-2.0" layoutY="422.0" prefHeight="106.0" prefWidth="718.0">
          <children>
             <Pane prefHeight="112.0" prefWidth="709.0">

@@ -20,6 +20,7 @@ import sample.Group.CreateGroup;
 import sample.Group.group;
 import sample.History.HistoryController;
 import sample.History.Liked;
+import sample.LocalSong.Downloads;
 import sample.LocalSong.LocalVideoController;
 import sample.LocalSong.localSongController;
 import sample.Player.AudioPlayer;
@@ -102,7 +103,19 @@ public class Controller implements Initializable {
                     stage.close();
                     AudioPlayer.mediaPlayer.stop();
                 }
+                else
+                {
+                    if (AudioPlayer.stage!=null)
+                    {
+                        if (AudioPlayer.stage.isShowing())
+                        {
+                            AudioPlayer.stage.close();
+                            AudioPlayer.mediaPlayer.stop();
+                        }
+                    }
+                }
                 AudioPlayer.isLocal = false;
+                AudioPlayer.queueSongs.clear();
                 AudioPlayer.queueSongs.addAll(rec);
                 gotoPlayer();
             }
@@ -113,14 +126,29 @@ public class Controller implements Initializable {
             public void handle(MouseEvent mouseEvent) {
                 int index = trending.getSelectionModel().getSelectedIndex();
                 AudioPlayer.index = index;
+                //System.out.println("index:"+index);
                 AudioPlayer.name=trending.getSelectionModel().getSelectedItem();
                 if (stage.isShowing())
                 {
                     stage.close();
                     AudioPlayer.mediaPlayer.stop();
+                    System.out.println("inside stage");
+                }
+                else
+                {
+                    if (AudioPlayer.stage!=null)
+                    {
+                        if (AudioPlayer.stage.isShowing())
+                        {
+                            AudioPlayer.stage.close();
+                            AudioPlayer.mediaPlayer.stop();
+                        }
+                    }
                 }
                 AudioPlayer.isLocal = false;
+                AudioPlayer.queueSongs.clear();
                 AudioPlayer.queueSongs.addAll(tre);
+                System.out.println("outside stage");
                 gotoPlayer();
             }
         });
@@ -136,7 +164,19 @@ public class Controller implements Initializable {
                     stage.close();
                     AudioPlayer.mediaPlayer.stop();
                 }
+                else
+                {
+                    if (AudioPlayer.stage!=null)
+                    {
+                        if (AudioPlayer.stage.isShowing())
+                        {
+                            AudioPlayer.stage.close();
+                            AudioPlayer.mediaPlayer.stop();
+                        }
+                    }
+                }
                 AudioPlayer.isLocal = false;
+                AudioPlayer.queueSongs.clear();
                 AudioPlayer.queueSongs.addAll(recom);
                 gotoPlayer();
             }
@@ -216,6 +256,7 @@ public class Controller implements Initializable {
         }
         stage.setTitle("Music Player");
         stage.setScene(new Scene(root,600,600));
+        AudioPlayer.stage = stage;
         stage.show();
     }
 
@@ -236,7 +277,7 @@ public class Controller implements Initializable {
         handle8.increaseView(index+1);
         AudioPlayer.srtFile = file2;
         AudioPlayer.id = index+1;
-        System.out.println(uri.toString());
+        //System.out.println(uri.toString());
         return uri;
     }
 
@@ -258,5 +299,22 @@ public class Controller implements Initializable {
             stage.setScene(new Scene(root,400,400));
             stage.show();
         }
+    }
+
+    public void downloads(ActionEvent actionEvent) throws Exception{
+        Stage stage = (Stage) username.getScene().getWindow();
+        Parent root = Downloads.getRoot();
+        stage.setTitle("Downloads");
+        stage.setScene(new Scene(root,600,700));
+        stage.show();
+    }
+
+    public void logOut(ActionEvent actionEvent) throws Exception{
+        localSongController.isLogin = false;
+        Stage stage = (Stage) username.getScene().getWindow();
+        Parent root = localSongController.getParent();
+        stage.setTitle("Local Songs");
+        stage.setScene(new Scene(root,600,600));
+        stage.show();
     }
 }

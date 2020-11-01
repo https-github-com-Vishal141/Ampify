@@ -5,6 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import sample.handleServer;
@@ -33,12 +34,18 @@ public class AddUser implements Initializable {
             }
             else
             {
-                System.out.println("user not exist");
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setHeaderText(null);
+                alert.setContentText("user doesn't exist");
+                alert.show();
             }
         }
         else
         {
-            System.out.println("afad");
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setHeaderText(null);
+            alert.setContentText("username is mandatory");
+            alert.show();
         }
     }
 
@@ -48,7 +55,13 @@ public class AddUser implements Initializable {
         gName.setEditable(false);
     }
 
-    public void back(ActionEvent actionEvent) {
+    public void back(ActionEvent actionEvent) throws Exception{
+        group.GNAME = gName.getText();
+        Stage stage = (Stage) username.getScene().getWindow();
+        Parent root = group.getRoot();
+        stage.setTitle(gName.getText());
+        stage.setScene(new Scene(root,600,600));
+        stage.show();
     }
 
     public static Parent getRoot() throws Exception

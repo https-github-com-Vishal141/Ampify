@@ -20,10 +20,11 @@ public class Create {
         {
             if (handle.createPlaylist(USER,name.getText()))
             {
+                CustomPlaylistController.USER = USER;
+                CustomPlaylistController.pName = name.getText();
                 Stage stage = (Stage) name.getScene().getWindow();
                 Parent root = CustomPlaylistController.getRoot();
                 stage.setTitle(name.getText());
-                CustomPlaylistController.pName = name.getText();
                 stage.setScene(new Scene(root,600,600));
                 stage.show();
             }
