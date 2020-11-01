@@ -1035,8 +1035,11 @@ public class DatabaseHandler {
                return false;
            }finally {
                try {
-                   connection.close();
-                   ps.close();
+                   if(!checkGroup(name))
+                   {
+                       connection.close();
+                       ps.close();
+                   }
                }catch (Exception e){
                    e.printStackTrace();
                }
@@ -1131,6 +1134,7 @@ public class DatabaseHandler {
         try{
             connection = getConnection();
             ps = connection.prepareStatement(query);
+            ps.setString(1,name);
             rs = ps.executeQuery();
             if(rs.next())
                 return true;
