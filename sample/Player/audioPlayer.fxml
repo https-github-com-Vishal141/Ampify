@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="530.0" prefWidth="718.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Player.AudioPlayer">
+<AnchorPane prefHeight="573.0" prefWidth="718.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Player.AudioPlayer">
    <children>
       <Pane fx:id="pane" layoutX="140.0" layoutY="67.0" prefHeight="317.0" prefWidth="382.0">
          <children>
@@ -33,9 +33,13 @@
          </children>
       </HBox>
       <Label fx:id="songName" layoutX="171.0" layoutY="34.0" text="Name" />
-      <ComboBox fx:id="queue" layoutX="553.0" layoutY="75.0" onAction="#playQueue" onSwipeRight="#swipe" prefWidth="150.0" promptText="Queue" />
       <Button fx:id="like" layoutX="32.0" layoutY="193.0" mnemonicParsing="false" onAction="#like" text="Like" />
       <Button fx:id="dislike" layoutX="31.0" layoutY="239.0" mnemonicParsing="false" onAction="#DisLike" prefHeight="18.0" prefWidth="62.0" text="Dislike" />
       <Button fx:id="download" layoutX="31.0" layoutY="283.0" mnemonicParsing="false" onAction="#download" prefHeight="26.0" prefWidth="75.0" text="Download" />
+      <Label layoutX="106.0" layoutY="528.0" text="volume" />
+      <Slider fx:id="vSlider" layoutX="158.0" layoutY="530.0" />
+      <ListView fx:id="queue" layoutX="522.0" layoutY="63.0" prefHeight="318.0" prefWidth="200.0" />
+      <Label layoutX="522.0" layoutY="43.0" text="Queue" />
+      <Button fx:id="delete" layoutX="671.0" layoutY="30.0" mnemonicParsing="false" onAction="#delete" text="delete" />
    </children>
 </AnchorPane>

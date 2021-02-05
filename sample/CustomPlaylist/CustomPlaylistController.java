@@ -9,8 +9,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import sample.Controller;
@@ -26,6 +28,7 @@ public class CustomPlaylistController implements Initializable {
     @FXML
     public ListView<String> songList;
     public Label playlistName;
+    public Button delete;
     public static String pName;
     public static ObservableList Songs = FXCollections.observableArrayList();
     public Set<Integer> Ids ;
@@ -52,6 +55,7 @@ public class CustomPlaylistController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         Songs.clear();
+        delete.setDisable(true);
         System.out.println(pName);
         playlistName.setText(pName);
         //System.out.println(USER);
@@ -60,29 +64,37 @@ public class CustomPlaylistController implements Initializable {
        songList.setOnMouseClicked(new EventHandler<MouseEvent>() {
            @Override
            public void handle(MouseEvent mouseEvent) {
-               int index = songList.getSelectionModel().getSelectedIndex();
-               AudioPlayer.index = index;
-               AudioPlayer.name=songList.getSelectionModel().getSelectedItem();
-               if (stage.isShowing())
+               if (mouseEvent.getClickCount()==2)
                {
-                   stage.close();
-                   AudioPlayer.mediaPlayer.stop();
-               }
-               else
-               {
-                   if (AudioPlayer.stage!=null)
+                   delete.setDisable(true);
+                   int index = songList.getSelectionModel().getSelectedIndex();
+                   AudioPlayer.index = index;
+                   AudioPlayer.name=songList.getSelectionModel().getSelectedItem();
+                   if (stage.isShowing())
                    {
-                       if (AudioPlayer.stage.isShowing())
+                       stage.close();
+                       AudioPlayer.mediaPlayer.stop();
+                   }
+                   else
+                   {
+                       if (AudioPlayer.stage!=null)
                        {
-                           AudioPlayer.stage.close();
-                           AudioPlayer.mediaPlayer.stop();
+                           if (AudioPlayer.stage.isShowing())
+                           {
+                               AudioPlayer.stage.close();
+                               AudioPlayer.mediaPlayer.stop();
+                           }
                        }
                    }
+                   AudioPlayer.isLocal = false;
+                   AudioPlayer.queueSongs.clear();
+                   AudioPlayer.queueSongs.addAll(Songs);
+                   gotoPlayer();
                }
-               AudioPlayer.isLocal = false;
-               AudioPlayer.queueSongs.clear();
-               AudioPlayer.queueSongs.addAll(Songs);
-               gotoPlayer();
+               else {
+                   delete.setDisable(false);
+               }
+
            }
        });
     }
@@ -116,5 +128,36 @@ public class CustomPlaylistController implements Initializable {
         stage1.setTitle("Share");
         stage1.setScene(new Scene(root,400,200));
         stage1.show();
+    }
+
+    public void deleteSong(ActionEvent actionEvent) {
+        handleServer server = new handleServer();
+        int ind = songList.getSelectionModel().getSelectedIndex();
+        server.deleteSong(USER,pName,get(ind));
+        Ids.remove(ind);
+        Songs.remove(ind);
+        songList.setItems(Songs);
+    }
+
+    public int get(int i)
+    {
+        int k=0;
+        for (int j:Ids)
+        {
+            if (i==k)
+                return j;
+            k++;
+        }
+        return -1;
+    }
+
+    public void deletePlaylist(ActionEvent actionEvent) {
+        handleServer server1 = new handleServer();
+        server1.deletePlaylist(USER,pName);
+        try {
+            back(actionEvent);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

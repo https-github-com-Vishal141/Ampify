@@ -8,9 +8,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import sample.Controller;
@@ -24,11 +22,12 @@ import java.util.ResourceBundle;
 
 public class group implements Initializable {
     public Label gName;
+    public Button deleteUser;
     public ListView<String> memberList,songList;
     public ComboBox<String> gPlaylist;
-    public static ObservableList songs= FXCollections.observableArrayList();
-    public static ObservableList members= FXCollections.observableArrayList();
-    public static ObservableList GROUP_PLAYLIST= FXCollections.observableArrayList();
+    public static ObservableList<String> songs= FXCollections.observableArrayList();
+    public static ObservableList<String> members= FXCollections.observableArrayList();
+    public static ObservableList<String> GROUP_PLAYLIST= FXCollections.observableArrayList();
     public static String GNAME;
 
     Stage stage = new Stage();
@@ -38,6 +37,7 @@ public class group implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        deleteUser.setDisable(true);
         songs.clear();
         members.clear();
         //GROUP_PLAYLIST.clear();
@@ -57,29 +57,39 @@ public class group implements Initializable {
         songList.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                int index = songList.getSelectionModel().getSelectedIndex();
-                AudioPlayer.index = index;
-                AudioPlayer.name=songList.getSelectionModel().getSelectedItem();
-                if (stage.isShowing())
+                if (mouseEvent.getClickCount()==2)
                 {
-                    stage.close();
-                    AudioPlayer.mediaPlayer.stop();
-                }
-                else
-                {
-                    if (AudioPlayer.stage!=null)
+                    int index = songList.getSelectionModel().getSelectedIndex();
+                    AudioPlayer.index = index;
+                    AudioPlayer.name=songList.getSelectionModel().getSelectedItem();
+                    if (stage.isShowing())
                     {
-                        if (AudioPlayer.stage.isShowing())
+                        stage.close();
+                        AudioPlayer.mediaPlayer.stop();
+                    }
+                    else
+                    {
+                        if (AudioPlayer.stage!=null)
                         {
-                            AudioPlayer.stage.close();
-                            AudioPlayer.mediaPlayer.stop();
+                            if (AudioPlayer.stage.isShowing())
+                            {
+                                AudioPlayer.stage.close();
+                                AudioPlayer.mediaPlayer.stop();
+                            }
                         }
                     }
+                    AudioPlayer.isLocal = false;
+                    AudioPlayer.queueSongs.clear();
+                    AudioPlayer.queueSongs.addAll(songs);
+                    gotoPlayer();
                 }
-                AudioPlayer.isLocal = false;
-                AudioPlayer.queueSongs.clear();
-                AudioPlayer.queueSongs.addAll(songs);
-                gotoPlayer();
+            }
+        });
+
+        memberList.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                deleteUser.setDisable(false);
             }
         });
     }
@@ -141,5 +151,34 @@ public class group implements Initializable {
         stage.setScene(new Scene(root,600,600));
         AudioPlayer.stage = stage;
         stage.show();
+    }
+
+    public void deleteUser(ActionEvent actionEvent) {
+        handleServer server1 = new handleServer();
+        int index = memberList.getSelectionModel().getSelectedIndex();
+        boolean result = server1.deleteMember(Controller.Username,members.get(index),GNAME);
+        if (!result)
+        {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setHeaderText(null);
+            alert.setContentText("You are not permitted to delete\nmember from the group");
+            alert.show();
+        }
+        else
+        {
+            members.remove(index);
+            memberList.setItems(members);
+        }
+        deleteUser.setDisable(true);
+    }
+
+    public void deleteGroup(ActionEvent actionEvent) {
+        handleServer server2 = new handleServer();
+        server2.deleteGroup(Controller.Username,GNAME);
+        try {
+            back(actionEvent);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

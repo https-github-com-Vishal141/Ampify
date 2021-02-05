@@ -44,30 +44,33 @@ public class Downloads implements Initializable {
         list.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                int index = list.getSelectionModel().getSelectedIndex();
-                AudioPlayer.index = index;
-                AudioPlayer.name=list.getSelectionModel().getSelectedItem();
-                localSongController.isDownload = true;
-                if (stage.isShowing())
+                if (mouseEvent.getClickCount()==2)
                 {
-                    stage.close();
-                    AudioPlayer.mediaPlayer.stop();
-                }
-                else
-                {
-                    if (AudioPlayer.stage!=null)
+                    int index = list.getSelectionModel().getSelectedIndex();
+                    AudioPlayer.index = index;
+                    AudioPlayer.name=list.getSelectionModel().getSelectedItem();
+                    localSongController.isDownload = true;
+                    if (stage.isShowing())
                     {
-                        if (AudioPlayer.stage.isShowing())
+                        stage.close();
+                        AudioPlayer.mediaPlayer.stop();
+                    }
+                    else
+                    {
+                        if (AudioPlayer.stage!=null)
                         {
-                            AudioPlayer.stage.close();
-                            AudioPlayer.mediaPlayer.stop();
+                            if (AudioPlayer.stage.isShowing())
+                            {
+                                AudioPlayer.stage.close();
+                                AudioPlayer.mediaPlayer.stop();
+                            }
                         }
                     }
+                    AudioPlayer.isLocal = true;
+                    AudioPlayer.queueSongs.clear();
+                    AudioPlayer.queueSongs.addAll(songs);
+                    gotoPlayer();
                 }
-                AudioPlayer.isLocal = true;
-                AudioPlayer.queueSongs.clear();
-                AudioPlayer.queueSongs.addAll(songs);
-                gotoPlayer();
             }
         });
     }
@@ -75,7 +78,7 @@ public class Downloads implements Initializable {
     public void getFileNames()
     {
         File[] files = File.listRoots();
-        String p = files[1]+"\\Ampify";
+        String p = files[1]+"\\Ampify\\"+Controller.Username;
         if (!Files.exists(Paths.get(p)))
             return;
         songFiles = new File(p).listFiles();
@@ -85,17 +88,17 @@ public class Downloads implements Initializable {
         }
     }
 
-    public static File getSong(int index)
+    public static File getSong(String title)
     {
+        int index = songs.indexOf(title);
         File file = songFiles[index];
-       // return file;
-      //  int index1 = file.getName().lastIndexOf(".");
         try {
             File tempFile = File.createTempFile(file.getName().substring(0,file.getName().indexOf(".")),".mp3");
             tempFile.deleteOnExit();
             FileOutputStream outputStream = new FileOutputStream(tempFile);
             FileInputStream inputStream = new FileInputStream(file);
             outputStream.write(inputStream.readAllBytes());
+            outputStream.flush();
             outputStream.close();
             inputStream.close();
             return tempFile;

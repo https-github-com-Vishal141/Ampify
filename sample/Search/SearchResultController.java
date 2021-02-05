@@ -45,32 +45,35 @@ public class SearchResultController implements Initializable {
             public void handle(MouseEvent mouseEvent) {
                 if (status.equals("search"))
                 {
-                    handleServer server = new handleServer();
-                    AudioPlayer.index = 0;
-                    String n = resultList.getSelectionModel().getSelectedItem();
-                    String name = split(n);
-                    AudioPlayer.name=name;
-                    if (stage.isShowing())
+                    if (mouseEvent.getClickCount()==2)
                     {
-                        stage.close();
-                        AudioPlayer.mediaPlayer.stop();
-                    }
-                    else
-                    {
-                        if (AudioPlayer.stage!=null)
+                        handleServer server = new handleServer();
+                        AudioPlayer.index = 0;
+                        String n = resultList.getSelectionModel().getSelectedItem();
+                        String name = split(n);
+                        AudioPlayer.name=name;
+                        if (stage.isShowing())
                         {
-                            if (AudioPlayer.stage.isShowing())
+                            stage.close();
+                            AudioPlayer.mediaPlayer.stop();
+                        }
+                        else
+                        {
+                            if (AudioPlayer.stage!=null)
                             {
-                                AudioPlayer.stage.close();
-                                AudioPlayer.mediaPlayer.stop();
+                                if (AudioPlayer.stage.isShowing())
+                                {
+                                    AudioPlayer.stage.close();
+                                    AudioPlayer.mediaPlayer.stop();
+                                }
                             }
                         }
+                        AudioPlayer.isLocal = false;
+                        AudioPlayer.queueSongs.clear();
+                        AudioPlayer.queueSongs.add(name);
+                        AudioPlayer.queueSongs.addAll(server.getRecent(Controller.Username));
+                        gotoPlayer();
                     }
-                    AudioPlayer.isLocal = false;
-                    AudioPlayer.queueSongs.clear();
-                    AudioPlayer.queueSongs.add(name);
-                    AudioPlayer.queueSongs.addAll(server.getRecent(Controller.Username));
-                    gotoPlayer();
                 }
                 else{
                     status="search";

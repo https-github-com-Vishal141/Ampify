@@ -12,7 +12,7 @@ import java.util.ResourceBundle;
 public class Equalizer implements Initializable {
 
     @FXML
-    public  Slider s1,s2,s3,s4,s5;
+    public Slider s1,s2,s3,s4,s5;
    // Slider[] sliders = {s1,s2,s3,s4,s5};
 
     private static final double START_FREQ = 250.0;

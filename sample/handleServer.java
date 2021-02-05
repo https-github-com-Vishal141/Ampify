@@ -3,6 +3,7 @@ package sample;
 import sample.CustomPlaylist.AddSongController;
 import sample.CustomPlaylist.CustomPlaylistController;
 import sample.Group.group;
+import sample.Login.RegisterController;
 import sample.Search.SearchResultController;
 
 import java.io.*;
@@ -33,16 +34,6 @@ public class handleServer
             e.printStackTrace();
         }
     }
-
-//    public void stop()
-//    {
-//        try {
-//            dos.writeUTF("stop");
-//            dos.flush();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
 
     public boolean login(String uname,String pass)
     {
@@ -102,6 +93,7 @@ public class handleServer
 
         try {
             dos.writeUTF("recent");
+            dos.writeUTF(Controller.Username);
             dos.writeUTF(uname);
             objectInputStream = new ObjectInputStream(socket.getInputStream());
             recentId = (ArrayList<Integer>) objectInputStream.readObject();
@@ -130,6 +122,7 @@ public class handleServer
         ArrayList<String> trendingTitle=null;
         try {
             dos.writeUTF("trending");
+            dos.writeUTF(Controller.Username);
             objectInputStream = new ObjectInputStream(socket.getInputStream());
             trendingId= (ArrayList<Integer>) objectInputStream.readObject();
             trendingTitle = (ArrayList<String>) objectInputStream.readObject();
@@ -159,6 +152,7 @@ public class handleServer
         ArrayList<String > recomLikeTitle = null;
          try {
             dos.writeUTF("recommended");
+             dos.writeUTF(Controller.Username);
             dos.writeUTF(uname);
             dos.writeUTF(time);
             dos.flush();
@@ -190,6 +184,7 @@ public class handleServer
     {
         try {
             dos.writeUTF("createPlaylist");
+            dos.writeUTF(Controller.Username);
             dos.writeUTF(uname);
             dos.writeUTF(name);
             dos.flush();
@@ -216,6 +211,7 @@ public class handleServer
     {
         try {
             dos.writeUTF("addToPlaylist");
+            dos.writeUTF(Controller.Username);
             dos.writeUTF(uname);
             dos.writeUTF(name);
             dos.writeUTF(""+id);
@@ -244,6 +240,7 @@ public class handleServer
         ArrayList<String> names=null;
         try {
             dos.writeUTF("getPlaylists");
+            dos.writeUTF(Controller.Username);
             dos.writeUTF(uname);
             dos.flush();
             objectInputStream = new ObjectInputStream(socket.getInputStream());
@@ -271,6 +268,7 @@ public class handleServer
         ArrayList<String> titles=null;
         try {
             dos.writeUTF("getPlaylist");
+            dos.writeUTF(Controller.Username);
             dos.writeUTF(uname);
             dos.writeUTF(name);
             dos.flush();
@@ -300,6 +298,7 @@ public class handleServer
         ArrayList[] history=null;
         try {
             dos.writeUTF("history");
+            dos.writeUTF(Controller.Username);
             dos.writeUTF(uname);
             dos.flush();
             objectInputStream = new ObjectInputStream(socket.getInputStream());
@@ -325,6 +324,7 @@ public class handleServer
     {
         try {
             dos.writeUTF("LikeOrDisLike");
+            dos.writeUTF(Controller.Username);
             dos.writeUTF(status);
             dos.writeUTF(uname);
             dos.writeUTF(id);
@@ -353,6 +353,7 @@ public class handleServer
         ArrayList<String> songs=null;
         try {
             dos.writeUTF("AllSong");
+            dos.writeUTF(Controller.Username);
             dos.flush();
             objectInputStream = new ObjectInputStream(socket.getInputStream());
             songs = (ArrayList<String>) objectInputStream.readObject();
@@ -378,6 +379,7 @@ public class handleServer
         ArrayList<String> searchHistory=null;
         try {
             dos.writeUTF("searchHistory");
+            dos.writeUTF(Controller.Username);
             dos.writeUTF(uname);
             dos.flush();
             objectInputStream = new ObjectInputStream(socket.getInputStream());
@@ -405,6 +407,7 @@ public class handleServer
         Set<Integer> ids = null;
         try {
             dos.writeUTF("searchResult");
+            dos.writeUTF(Controller.Username);
             dos.writeUTF(item);
             dos.flush();
             objectInputStream = new ObjectInputStream(socket.getInputStream());
@@ -434,6 +437,7 @@ public class handleServer
         Set<Integer> ids = null;
         try {
             dos.writeUTF("searchResult");
+            dos.writeUTF(Controller.Username);
             dos.writeUTF(item);
             dos.flush();
             objectInputStream = new ObjectInputStream(socket.getInputStream());
@@ -461,6 +465,7 @@ public class handleServer
     {
         try {
             dos.writeUTF("addToSearchHistory");
+            dos.writeUTF(Controller.Username);
             dos.writeUTF(user);
             dos.writeUTF(item);
             dos.flush();
@@ -485,6 +490,7 @@ public class handleServer
         URL uri=null;
         try {
             dos.writeUTF("getSong");
+            dos.writeUTF(Controller.Username);
             dos.writeUTF(id+"");
             dos.flush();
             objectInputStream = new ObjectInputStream(socket.getInputStream());
@@ -513,6 +519,7 @@ public class handleServer
        // URI uri=null;
         try {
             dos.writeUTF("getSrt");
+            dos.writeUTF(Controller.Username);
             dos.writeUTF(id+"");
             dos.flush();
             objectInputStream = new ObjectInputStream(socket.getInputStream());
@@ -543,6 +550,7 @@ public class handleServer
         try {
             dos.writeUTF("addToHistory");
             dos.writeUTF(Controller.Username);
+            dos.writeUTF(Controller.Username);
             dos.writeUTF(id+"");
             dos.writeUTF(date);
             dos.writeUTF(time);
@@ -567,6 +575,7 @@ public class handleServer
     {
         try {
             dos.writeUTF("increaseView");
+            dos.writeUTF(Controller.Username);
             dos.writeUTF(id+"");
             dos.flush();
         } catch (IOException e) {
@@ -588,6 +597,7 @@ public class handleServer
     {
         try {
             dos.writeUTF("share");
+            dos.writeUTF(Controller.Username);
             dos.writeUTF(Controller.Username);
             dos.writeUTF(pname);
             dos.writeUTF(uname);
@@ -611,11 +621,57 @@ public class handleServer
 
     }
 
-    public void Details(String uname,String detail,String type)
+    public void LanguageDetails(String uname,String detail)
     {
         try {
-            dos.writeUTF("details");
-            dos.writeUTF(type);
+            dos.writeUTF("LanguageDetails");
+            dos.writeUTF(Controller.Username);
+            dos.writeUTF(uname);
+            dos.writeUTF(detail);
+            dos.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally {
+            try {
+                socket.close();
+                dis.close();
+                dos.close();
+                br.close();
+                //  objectInputStream.close();
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void ArtistDetails(String uname,String detail)
+    {
+        try {
+            dos.writeUTF("ArtistDetails");
+            dos.writeUTF(Controller.Username);
+            dos.writeUTF(uname);
+            dos.writeUTF(detail);
+            dos.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally {
+            try {
+                socket.close();
+                dis.close();
+                dos.close();
+                br.close();
+                //  objectInputStream.close();
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void GeneresDetails(String uname,String detail)
+    {
+        try {
+            dos.writeUTF("GeneresDetails");
+            dos.writeUTF(Controller.Username);
             dos.writeUTF(uname);
             dos.writeUTF(detail);
             dos.flush();
@@ -639,6 +695,7 @@ public class handleServer
         String result=null;
         try {
             dos.writeUTF("createGroup");
+            dos.writeUTF(Controller.Username);
             dos.writeUTF(admin);
             dos.writeUTF(name);
             dos.flush();
@@ -666,6 +723,7 @@ public class handleServer
         Set<String> groups=null;
         try {
             dos.writeUTF("getGroups");
+            dos.writeUTF(Controller.Username);
             dos.writeUTF(uname);
             dos.flush();
             objectInputStream = new ObjectInputStream(socket.getInputStream());
@@ -693,6 +751,7 @@ public class handleServer
         Set<String> members ;
         try {
             dos.writeUTF("groupDetails");
+            dos.writeUTF(Controller.Username);
             dos.writeUTF(gName);
             dos.flush();
             objectInputStream = new ObjectInputStream(socket.getInputStream());
@@ -720,6 +779,7 @@ public class handleServer
         String result=null;
         try {
             dos.writeUTF("addUser");
+            dos.writeUTF(Controller.Username);
             dos.writeUTF(gName);
             dos.writeUTF(uname);
             dos.flush();
@@ -747,6 +807,7 @@ public class handleServer
         Set<String> likes=null;
         try {
             dos.writeUTF("liked");
+            dos.writeUTF(Controller.Username);
             dos.writeUTF(uname);
             dos.flush();
             objectInputStream = new ObjectInputStream(socket.getInputStream());
@@ -767,6 +828,87 @@ public class handleServer
             }
         }
     }
+
+    public void setDetails()
+    {
+        Set<String> languages;
+        Set<String> artists;
+        Set<String> generes;
+        try {
+            dos.writeUTF("getDetails");
+            dos.writeUTF(Controller.Username);
+            dos.flush();
+            objectInputStream = new ObjectInputStream(socket.getInputStream());
+            languages = (Set<String>) objectInputStream.readObject();
+            artists = (Set<String>) objectInputStream.readObject();
+            generes = (Set<String>) objectInputStream.readObject();
+            RegisterController.languagesList.addAll(languages);
+            RegisterController.artistList.addAll(artists);
+            RegisterController.generesList.addAll(generes);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteSong(String uname,String pName,int id)
+    {
+        try {
+            dos.writeUTF("DeleteSong");
+            dos.writeUTF(Controller.Username);
+            dos.writeUTF(uname);
+            dos.writeUTF(pName);
+            dos.writeUTF(id+"");
+            dos.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void deletePlaylist(String uname,String pName)
+    {
+        try {
+            dos.writeUTF("DeletePlaylist");
+            dos.writeUTF(Controller.Username);
+            dos.writeUTF(uname);
+            dos.writeUTF(pName);
+            dos.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteGroup(String uname,String gName)
+    {
+        try {
+            dos.writeUTF("DeleteGroup");
+            dos.writeUTF(Controller.Username);
+            dos.writeUTF(uname);
+            dos.writeUTF(gName);
+            dos.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public boolean deleteMember(String admin,String uname,String gName)
+    {
+        try {
+            dos.writeUTF("DeleteMember");
+            dos.writeUTF(Controller.Username);
+            dos.writeUTF(admin);
+            dos.writeUTF(uname);
+            dos.writeUTF(gName);
+            dos.flush();
+            String reply = br.readLine();
+            if (reply.equals("true"))
+                return true;
+            return false;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 
 
 

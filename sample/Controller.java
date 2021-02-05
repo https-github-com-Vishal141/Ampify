@@ -38,7 +38,7 @@ public class Controller implements Initializable {
     public static String Username;
     public static int Separator;
     public  Label username;
-    public ListView<String> recent,recommended,trending;
+    public ListView<String> recent,recommended,trending,newSongs;
     public ComboBox<String> playlists;
     public ComboBox<String> groups;
 
@@ -95,90 +95,99 @@ public class Controller implements Initializable {
         recent.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                int index = recent.getSelectionModel().getSelectedIndex();
-                AudioPlayer.index = index;
-                AudioPlayer.name=recent.getSelectionModel().getSelectedItem();
-                if (stage.isShowing())
+                if (mouseEvent.getClickCount()==2)
                 {
-                    stage.close();
-                    AudioPlayer.mediaPlayer.stop();
-                }
-                else
-                {
-                    if (AudioPlayer.stage!=null)
+                    int index = recent.getSelectionModel().getSelectedIndex();
+                    AudioPlayer.index = index;
+                    AudioPlayer.name=recent.getSelectionModel().getSelectedItem();
+                    if (stage.isShowing())
                     {
-                        if (AudioPlayer.stage.isShowing())
+                        stage.close();
+                        AudioPlayer.mediaPlayer.stop();
+                    }
+                    else
+                    {
+                        if (AudioPlayer.stage!=null)
                         {
-                            AudioPlayer.stage.close();
-                            AudioPlayer.mediaPlayer.stop();
+                            if (AudioPlayer.stage.isShowing())
+                            {
+                                AudioPlayer.stage.close();
+                                AudioPlayer.mediaPlayer.stop();
+                            }
                         }
                     }
+                    AudioPlayer.isLocal = false;
+                    AudioPlayer.queueSongs.clear();
+                    AudioPlayer.queueSongs.addAll(rec);
+                    gotoPlayer();
                 }
-                AudioPlayer.isLocal = false;
-                AudioPlayer.queueSongs.clear();
-                AudioPlayer.queueSongs.addAll(rec);
-                gotoPlayer();
             }
         });
 
         trending.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                int index = trending.getSelectionModel().getSelectedIndex();
-                AudioPlayer.index = index;
-                //System.out.println("index:"+index);
-                AudioPlayer.name=trending.getSelectionModel().getSelectedItem();
-                if (stage.isShowing())
-                {
-                    stage.close();
-                    AudioPlayer.mediaPlayer.stop();
-                    System.out.println("inside stage");
-                }
-                else
-                {
-                    if (AudioPlayer.stage!=null)
-                    {
-                        if (AudioPlayer.stage.isShowing())
-                        {
-                            AudioPlayer.stage.close();
-                            AudioPlayer.mediaPlayer.stop();
-                        }
-                    }
-                }
-                AudioPlayer.isLocal = false;
-                AudioPlayer.queueSongs.clear();
-                AudioPlayer.queueSongs.addAll(tre);
-                System.out.println("outside stage");
-                gotoPlayer();
+               if (mouseEvent.getClickCount()==2)
+               {
+                   int index = trending.getSelectionModel().getSelectedIndex();
+                   AudioPlayer.index = index;
+                   //System.out.println("index:"+index);
+                   AudioPlayer.name=trending.getSelectionModel().getSelectedItem();
+                   if (stage.isShowing())
+                   {
+                       stage.close();
+                       AudioPlayer.mediaPlayer.stop();
+                       System.out.println("inside stage");
+                   }
+                   else
+                   {
+                       if (AudioPlayer.stage!=null)
+                       {
+                           if (AudioPlayer.stage.isShowing())
+                           {
+                               AudioPlayer.stage.close();
+                               AudioPlayer.mediaPlayer.stop();
+                           }
+                       }
+                   }
+                   AudioPlayer.isLocal = false;
+                   AudioPlayer.queueSongs.clear();
+                   AudioPlayer.queueSongs.addAll(tre);
+                   System.out.println("outside stage");
+                   gotoPlayer();
+               }
             }
         });
 
         recommended.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                int index = recommended.getSelectionModel().getSelectedIndex();
-                AudioPlayer.index = index;
-                AudioPlayer.name=recommended.getSelectionModel().getSelectedItem();
-                if (stage.isShowing())
+                if (mouseEvent.getClickCount()==2)
                 {
-                    stage.close();
-                    AudioPlayer.mediaPlayer.stop();
-                }
-                else
-                {
-                    if (AudioPlayer.stage!=null)
+                    int index = recommended.getSelectionModel().getSelectedIndex();
+                    AudioPlayer.index = index;
+                    AudioPlayer.name=recommended.getSelectionModel().getSelectedItem();
+                    if (stage.isShowing())
                     {
-                        if (AudioPlayer.stage.isShowing())
+                        stage.close();
+                        AudioPlayer.mediaPlayer.stop();
+                    }
+                    else
+                    {
+                        if (AudioPlayer.stage!=null)
                         {
-                            AudioPlayer.stage.close();
-                            AudioPlayer.mediaPlayer.stop();
+                            if (AudioPlayer.stage.isShowing())
+                            {
+                                AudioPlayer.stage.close();
+                                AudioPlayer.mediaPlayer.stop();
+                            }
                         }
                     }
+                    AudioPlayer.isLocal = false;
+                    AudioPlayer.queueSongs.clear();
+                    AudioPlayer.queueSongs.addAll(recom);
+                    gotoPlayer();
                 }
-                AudioPlayer.isLocal = false;
-                AudioPlayer.queueSongs.clear();
-                AudioPlayer.queueSongs.addAll(recom);
-                gotoPlayer();
             }
         });
 

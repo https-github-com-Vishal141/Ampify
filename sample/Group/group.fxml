@@ -5,7 +5,7 @@
 
 <AnchorPane prefHeight="620.0" prefWidth="683.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Group.group">
    <children>
-      <Button mnemonicParsing="false" text="back" onAction="#back"/>
+      <Button mnemonicParsing="false" onAction="#back" text="back" />
       <Label fx:id="gName" layoutX="41.0" layoutY="46.0" text="group name" />
       <Button layoutX="586.0" layoutY="13.0" mnemonicParsing="false" onAction="#addUser" text="Add User" />
       <ComboBox fx:id="gPlaylist" layoutX="148.0" layoutY="41.0" onAction="#gotoGplaylist" prefHeight="26.0" prefWidth="88.0" promptText="Playlists" />
@@ -13,5 +13,7 @@
       <Label layoutX="20.0" layoutY="74.0" text="Songs" />
       <ListView fx:id="memberList" layoutX="459.0" layoutY="99.0" prefHeight="523.0" prefWidth="200.0" />
       <Label layoutX="459.0" layoutY="74.0" text="Members" />
+      <Button fx:id="deleteUser" layoutX="476.0" layoutY="13.0" mnemonicParsing="false" onAction="#deleteUser" text="Delete User" />
+      <Button fx:id="deleteGroup" layoutX="352.0" layoutY="13.0" mnemonicParsing="false" onAction="#deleteGroup" text="Delete Group" />
    </children>
 </AnchorPane>

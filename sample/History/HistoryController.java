@@ -24,9 +24,6 @@ import java.sql.SQLException;
 import java.util.*;
 
 public class HistoryController  implements Initializable {
-    private Connection connection;
-    private PreparedStatement preparedStatement;
-    private ResultSet rs;
     public static String username;
 
     @FXML
@@ -66,30 +63,33 @@ public class HistoryController  implements Initializable {
         historySongs.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                int index = historySongs.getSelectionModel().getSelectedIndex();
-                AudioPlayer.index = index;
-                //AudioPlayer.name=historySongs.getSelectionModel().getSelectedItem();
-                AudioPlayer.name = songTitle.get(index);
-                if (stage.isShowing())
+                if (mouseEvent.getClickCount()==2)
                 {
-                    stage.close();
-                    AudioPlayer.mediaPlayer.stop();
-                }
-                else
-                {
-                    if (AudioPlayer.stage!=null)
+                    int index = historySongs.getSelectionModel().getSelectedIndex();
+                    AudioPlayer.index = index;
+                    //AudioPlayer.name=historySongs.getSelectionModel().getSelectedItem();
+                    AudioPlayer.name = songTitle.get(index);
+                    if (stage.isShowing())
                     {
-                        if (AudioPlayer.stage.isShowing())
+                        stage.close();
+                        AudioPlayer.mediaPlayer.stop();
+                    }
+                    else
+                    {
+                        if (AudioPlayer.stage!=null)
                         {
-                            AudioPlayer.stage.close();
-                            AudioPlayer.mediaPlayer.stop();
+                            if (AudioPlayer.stage.isShowing())
+                            {
+                                AudioPlayer.stage.close();
+                                AudioPlayer.mediaPlayer.stop();
+                            }
                         }
                     }
+                    AudioPlayer.isLocal = false;
+                    AudioPlayer.queueSongs.clear();
+                    AudioPlayer.queueSongs.addAll(songTitle);
+                    gotoPlayer();
                 }
-                AudioPlayer.isLocal = false;
-                AudioPlayer.queueSongs.clear();
-                AudioPlayer.queueSongs.addAll(songTitle);
-                gotoPlayer();
             }
         });
     }

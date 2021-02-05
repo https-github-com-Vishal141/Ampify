@@ -37,30 +37,33 @@ public class Liked implements Initializable {
         likeSong.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                int index = likeSong.getSelectionModel().getSelectedIndex();
-                AudioPlayer.index = index;
-                //AudioPlayer.name=historySongs.getSelectionModel().getSelectedItem();
-                AudioPlayer.name = songs.get(index);
-                if (stage.isShowing())
+                if (mouseEvent.getClickCount()==2)
                 {
-                    stage.close();
-                    AudioPlayer.mediaPlayer.stop();
-                }
-                else
-                {
-                    if (AudioPlayer.stage!=null)
+                    int index = likeSong.getSelectionModel().getSelectedIndex();
+                    AudioPlayer.index = index;
+                    //AudioPlayer.name=historySongs.getSelectionModel().getSelectedItem();
+                    AudioPlayer.name = songs.get(index);
+                    if (stage.isShowing())
                     {
-                        if (AudioPlayer.stage.isShowing())
+                        stage.close();
+                        AudioPlayer.mediaPlayer.stop();
+                    }
+                    else
+                    {
+                        if (AudioPlayer.stage!=null)
                         {
-                            AudioPlayer.stage.close();
-                            AudioPlayer.mediaPlayer.stop();
+                            if (AudioPlayer.stage.isShowing())
+                            {
+                                AudioPlayer.stage.close();
+                                AudioPlayer.mediaPlayer.stop();
+                            }
                         }
                     }
+                    AudioPlayer.isLocal = false;
+                    AudioPlayer.queueSongs.clear();
+                    AudioPlayer.queueSongs.addAll(songs);
+                    gotoPlayer();
                 }
-                AudioPlayer.isLocal = false;
-                AudioPlayer.queueSongs.clear();
-                AudioPlayer.queueSongs.addAll(songs);
-                gotoPlayer();
             }
         });
     }

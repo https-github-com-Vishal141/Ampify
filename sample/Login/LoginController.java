@@ -51,6 +51,8 @@ public class LoginController {
 
 
     public void SignUp(ActionEvent actionEvent) throws IOException{
+        handleServer server = new handleServer();
+        server.setDetails();
         Stage stage = (Stage) signIn.getScene().getWindow();
         Parent root = FXMLLoader.load(getClass().getResource("register.fxml"));
         stage.setTitle("Sign Up");

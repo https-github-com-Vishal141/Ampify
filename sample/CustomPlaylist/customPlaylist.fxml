@@ -16,6 +16,8 @@
             <Button fx:id="addSong" layoutX="477.0" layoutY="9.0" mnemonicParsing="false" onAction="#AddSong" text="add song" />
             <Button mnemonicParsing="false" onAction="#back" text="back" />
             <Button fx:id="share" layoutX="395.0" layoutY="9.0" mnemonicParsing="false" onAction="#Share" text="share" />
+            <Button fx:id="delete" layoutX="300.0" layoutY="11.0" mnemonicParsing="false" onAction="#deleteSong" text=" deleteSong" />
+            <Button layoutX="202.0" layoutY="11.0" mnemonicParsing="false" onAction="#deletePlaylist" text=" deletePlaylist" />
          </children>
       </AnchorPane>
       <AnchorPane layoutY="47.0" prefHeight="352.0" prefWidth="600.0">

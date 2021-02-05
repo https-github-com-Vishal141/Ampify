@@ -84,36 +84,39 @@ public class LocalVideoController implements Initializable {
         videoList.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                int index = videoList.getSelectionModel().getSelectedIndex();
-                VideoPlayer.index = index;
-                if (stage.isShowing())
+                if (mouseEvent.getClickCount()==2)
                 {
-                    VideoPlayer.player.stop();
-                    stage.close();
-                }
-                else
-                {
-                    if (VideoPlayer.stage!=null)
+                    int index = videoList.getSelectionModel().getSelectedIndex();
+                    VideoPlayer.index = index;
+                    if (stage.isShowing())
                     {
-                        if (VideoPlayer.stage.isShowing())
+                        VideoPlayer.player.stop();
+                        stage.close();
+                    }
+                    else
+                    {
+                        if (VideoPlayer.stage!=null)
                         {
-                            VideoPlayer.player.stop();
-                            VideoPlayer.stage.close();
+                            if (VideoPlayer.stage.isShowing())
+                            {
+                                VideoPlayer.player.stop();
+                                VideoPlayer.stage.close();
+                            }
                         }
                     }
+                    VideoPlayer.Name=videoList.getSelectionModel().getSelectedItem();
+                    VideoPlayer.queueSongs.addAll(list);
+                    VideoPlayer.stage = stage;
+                    Parent root = null;
+                    try {
+                        root = VideoPlayer.getRoot();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    stage.setTitle("Player");
+                    stage.setScene(new Scene(root,800,600));
+                    stage.show();
                 }
-                VideoPlayer.Name=videoList.getSelectionModel().getSelectedItem();
-                VideoPlayer.queueSongs.addAll(list);
-                VideoPlayer.stage = stage;
-                Parent root = null;
-                try {
-                    root = VideoPlayer.getRoot();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                stage.setTitle("Player");
-                stage.setScene(new Scene(root,800,600));
-                stage.show();
             }
         });
     }

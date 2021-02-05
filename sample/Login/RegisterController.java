@@ -1,22 +1,66 @@
 package sample.Login;
 
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import sample.Controller;
 import sample.handleServer;
 
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.ResourceBundle;
 
-public class RegisterController {
+public class RegisterController implements Initializable {
     public TextField username,cPassword,email;
     public PasswordField password;
     public Button register;
-    public CheckBox hindi,english,selena,justine,rockm,dubstep;
+    public ListView<String> languages,generes,artists;
+    public static ObservableList<String> languagesList= FXCollections.observableArrayList();
+    public static ObservableList<String> artistList= FXCollections.observableArrayList();
+    public static ObservableList<String> generesList= FXCollections.observableArrayList();
+
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        languages.setItems(languagesList);
+        artists.setItems(artistList);
+        generes.setItems(generesList);
+
+        languages.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                handleServer server = new handleServer();
+                String lan = languages.getSelectionModel().getSelectedItem();
+                server.LanguageDetails(username.getText(),lan);
+            }
+        });
+
+        artists.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                handleServer server = new handleServer();
+                String lan = artists.getSelectionModel().getSelectedItem();
+                server.ArtistDetails(username.getText(),lan);
+            }
+        });
+
+        generes.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                handleServer server = new handleServer();
+                String lan = generes.getSelectionModel().getSelectedItem();
+                server.GeneresDetails(username.getText(),lan);
+            }
+        });
+    }
 
     public void onRegister(ActionEvent actionEvent) throws Exception {
         String uname = username.getText();
@@ -33,7 +77,6 @@ public class RegisterController {
                if (!result.equals("emailExist")){
                    if (!result.equals("userExist"))
                    {
-                       insertDetail();
                        Stage stage = (Stage) register.getScene().getWindow();
                        Parent root = FXMLLoader.load(getClass().getResource("login.fxml"));
                        stage.setTitle("Login");
@@ -82,37 +125,6 @@ public class RegisterController {
     {
         Parent root = FXMLLoader.load(RegisterController.class.getResource("register.fxml"));
         return root;
-    }
-
-    public void insertDetail()
-    {
-       // CheckBox[] array = {hindi,english,selena,justine,rockm,dubstep};
-//        int i=0;
-//        String detail;
-        handleServer server1 = new handleServer();
-        handleServer server2 = new handleServer();
-        if (hindi.isSelected())
-            server1.Details(username.getText(),"hindi","language");
-
-        if (english.isSelected())
-            server2.Details(username.getText(),"english","language");
-
-        handleServer server3 = new handleServer();
-        handleServer server4 = new handleServer();
-        if (selena.isSelected())
-            server3.Details(username.getText(),"selena","artist");
-
-        if (justine.isSelected())
-            server4.Details(username.getText(),justine.getText(),"artist");
-
-
-        handleServer server5 = new handleServer();
-        handleServer server6 = new handleServer();
-        if (rockm.isSelected())
-            server5.Details(username.getText(),rockm.getText(),"genere");
-
-        if (dubstep.isSelected())
-            server6.Details(username.getText(),dubstep.getText(),"genere");
     }
 
 }

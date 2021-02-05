@@ -97,13 +97,13 @@ public class localSongController implements Initializable {
         stage.show();
     }
 
-    public static File getSongById(int index)
+    public static File getSongById(String title)
     {
         if (isDownload)
         {
-            return Downloads.getSong(index);
+            return Downloads.getSong(title);
         }
-        return songs.get(index);
+        return songs.get(list.indexOf(title));
     }
 
     @Override
@@ -119,30 +119,33 @@ public class localSongController implements Initializable {
         myList.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                int index = myList.getSelectionModel().getSelectedIndex();
-                AudioPlayer.index = index;
-                AudioPlayer.name=myList.getSelectionModel().getSelectedItem();
-                isDownload = false;
-                if (stage.isShowing())
+                if (mouseEvent.getClickCount()==2)
                 {
-                    stage.close();
-                    AudioPlayer.mediaPlayer.stop();
-                }
-                else
-                {
-                    if (AudioPlayer.stage!=null)
+                    int index = myList.getSelectionModel().getSelectedIndex();
+                    AudioPlayer.index = index;
+                    AudioPlayer.name=myList.getSelectionModel().getSelectedItem();
+                    isDownload = false;
+                    if (stage.isShowing())
                     {
-                        if (AudioPlayer.stage.isShowing())
+                        stage.close();
+                        AudioPlayer.mediaPlayer.stop();
+                    }
+                    else
+                    {
+                        if (AudioPlayer.stage!=null)
                         {
-                            AudioPlayer.stage.close();
-                            AudioPlayer.mediaPlayer.stop();
+                            if (AudioPlayer.stage.isShowing())
+                            {
+                                AudioPlayer.stage.close();
+                                AudioPlayer.mediaPlayer.stop();
+                            }
                         }
                     }
+                    AudioPlayer.isLocal = true;
+                    AudioPlayer.queueSongs.clear();
+                    AudioPlayer.queueSongs.addAll(list);
+                    gotoPlayer();
                 }
-                AudioPlayer.isLocal = true;
-                AudioPlayer.queueSongs.clear();
-                AudioPlayer.queueSongs.addAll(list);
-                gotoPlayer();
             }
         });
 
