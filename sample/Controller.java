@@ -290,6 +290,13 @@ public class Controller implements Initializable {
         return uri;
     }
 
+    public static File getSongFile(String title)
+    {
+        handleServer handle9 = new handleServer();
+        int id = AllTitles.indexOf(title);
+        return handle9.getSongFile(id+1);
+    }
+
     public void gotoGroups(ActionEvent actionEvent) throws Exception{
         if (!groups.getSelectionModel().getSelectedItem().equals("Create Group"))
         {

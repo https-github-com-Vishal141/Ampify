@@ -34,26 +34,23 @@ public class localSongController implements Initializable {
     public static ObservableList<String> list = FXCollections.observableArrayList();
     public static ArrayList<File> songs;
     public static boolean isDownload=false;
-    Stage stage = new Stage();
+    public Stage stage = new Stage();
     public static boolean isLogin = false;
     public static boolean isFirst=true;
 
     public void setList()
     {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                if (isFirst)
+        Platform.runLater(() -> {
+            if (isFirst)
+            {
+                songs= getSongs(File.listRoots());
+                for (File f:songs)
                 {
-                    songs= getSongs(File.listRoots());
-                    for (File f:songs)
-                    {
-                        list.add(f.getName().replace(".mp3",""));
-                    }
-                    isFirst=false;
+                    list.add(f.getName().replace(".mp3",""));
                 }
-                myList.setItems(list);
+                isFirst=false;
             }
+            myList.setItems(list);
         });
     }
 
@@ -115,7 +112,6 @@ public class localSongController implements Initializable {
             login.setDisable(false);
             back.setDisable(true);
         }
-        setList();
         myList.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
@@ -148,7 +144,7 @@ public class localSongController implements Initializable {
                 }
             }
         });
-
+        Platform.runLater(this::setList);
     }
 
     public void back(ActionEvent actionEvent) throws Exception{

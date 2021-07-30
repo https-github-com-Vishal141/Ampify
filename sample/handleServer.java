@@ -513,6 +513,33 @@ public class handleServer
         }
     }
 
+    public File getSongFile(int id)
+    {
+        File file=null;
+        try{
+            dos.writeUTF("getSongFile");
+            dos.writeUTF(Controller.Username);
+            dos.writeUTF(id+"");
+            dos.flush();
+            objectInputStream = new ObjectInputStream(socket.getInputStream());
+            file = (File)objectInputStream.readObject();
+            return file;
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            try {
+                socket.close();
+                dis.close();
+                dos.close();
+                objectInputStream.close();
+                br.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return file;
+    }
+
     public File getSrt(int id)
     {
         File file=null;
@@ -908,19 +935,4 @@ public class handleServer
             return false;
         }
     }
-
-
-
-
-//    public void close()
-//    {
-//        try {
-//            socket.close();
-//            dis.close();
-//            dos.close();
-//            br.close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
 }

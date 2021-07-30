@@ -107,7 +107,6 @@ public class AudioPlayer implements Initializable {
             path = file.toURI().toString();
         }
         else {
-            // System.out.println(index);
             uri = Controller.getSong(queueSongs.get(index));
             path = uri.toString();
             setStream();
@@ -190,6 +189,7 @@ public class AudioPlayer implements Initializable {
                 updateSlider();
             }
         });
+        play.setText("Pause");
         mediaPlayer.play();
     }
 
@@ -219,9 +219,9 @@ public class AudioPlayer implements Initializable {
                 updateSlider();
             }
         });
+        play.setText("Pause");
         mediaPlayer.play();
     }
-
 
     public void previous(ActionEvent actionEvent) {
         int len = queueSongs.size();
@@ -444,16 +444,19 @@ public class AudioPlayer implements Initializable {
         Path path = createPath();
         if (path!=null)
         {
-            try {
-                FileInputStream inputStream = new FileInputStream(uri.toString());
-                FileOutputStream outputStream = new FileOutputStream(path.toFile());
-                outputStream.write(inputStream.readAllBytes());
-                outputStream.flush();
-                inputStream.close();
-                outputStream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            Platform.runLater(() -> {
+                try{
+                    File httpFile = Controller.getSongFile(queueSongs.get(index));
+                    FileInputStream inputStream = new FileInputStream(httpFile);
+                    FileOutputStream outputStream = new FileOutputStream(path.toFile());
+                    outputStream.write(inputStream.readAllBytes());
+                    outputStream.flush();
+                    outputStream.close();
+                    inputStream.close();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            });
         }
         else
         {
@@ -467,8 +470,7 @@ public class AudioPlayer implements Initializable {
     public Path createPath()
     {
         File[] files = File.listRoots();
-        String path = files[1]+"Ampify/"+Controller.Username;
-        //String path1 = path+"\\"+srtFile.getName().substring(0,srtFile.getName().indexOf("."))+".v4";
+        String path = files[1]+"Ampify";
         String path1 = path+"\\"+name+".v4";
         Path p = Paths.get(path);
         Path P=null;
@@ -476,6 +478,7 @@ public class AudioPlayer implements Initializable {
         {
             try {
                 Files.createDirectory(p);
+                System.out.println("created");
             } catch (IOException e) {
                 e.printStackTrace();
             }

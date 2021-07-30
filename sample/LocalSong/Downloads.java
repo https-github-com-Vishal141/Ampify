@@ -78,7 +78,7 @@ public class Downloads implements Initializable {
     public void getFileNames()
     {
         File[] files = File.listRoots();
-        String p = files[1]+"\\Ampify\\"+Controller.Username;
+        String p = files[1]+"Ampify";
         if (!Files.exists(Paths.get(p)))
             return;
         songFiles = new File(p).listFiles();
