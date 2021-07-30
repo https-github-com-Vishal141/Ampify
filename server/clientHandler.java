@@ -118,10 +118,18 @@ public class clientHandler implements Runnable {
                        objectOutputStream.writeObject(url);
                        objectOutputStream.flush();
                        break;
+                   case "getSongFile":
+                       Id = dis.readUTF();
+                       id = Integer.parseInt(Id);
+                       File file = files[id-1];
+                       objectOutputStream.writeObject(file);
+                       objectOutputStream.flush();
+                       System.out.println("sent");
+                       break;
                    case "getSrt":
                        Id = dis.readUTF();
                        id = Integer.parseInt(Id);
-                       File file = srtfiles[id-1];
+                       file = srtfiles[id-1];
                        objectOutputStream.writeObject(file);
                        objectOutputStream.flush();
                        break;
